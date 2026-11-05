@@ -4,10 +4,15 @@
 # model_id:   exact ID sent to the provider API
 # max_tokens: output cap per call; also caps thinking tokens and the worst-case cost
 # temperature: omit to use the provider default (SPEC 3.9)
-# settings:   provider-specific; for anthropic:
-#               thinking: omit | adaptive | disabled | between_tools
+# settings:   provider-specific (each adapter validates its own with zod):
+#   anthropic:  thinking: omit | adaptive | disabled | between_tools
 #                 (what is accepted depends on the model; check the model's docs)
 #               effort: low | medium | high | xhigh | max (optional)
+#   openai:     reasoning_effort: none | minimal | low | medium | high | xhigh | max (optional)
+#   google:     thinking_level: minimal | low | medium | high, or thinking_budget: <tokens>
+#   openrouter: provider: <one endpoint slug to pin, e.g. mistral/zdr> (required)
+#               reasoning_effort: as openai (optional)
+#               model_id must be plain: no :free or other :variant suffix
 models:
   - key: fake
     provider: fake
@@ -35,3 +40,62 @@ models:
     max_tokens: 1024
     settings:
       thinking: disabled
+
+  # OpenAI mid-size model. Reasoning can be turned off ("none" is accepted), so it is,
+  # as SPEC 3.9 asks. Temperature omitted (provider default, recorded as such).
+  # max_output_tokens includes reasoning tokens, so max_tokens bounds the cost.
+  # Source: https://developers.openai.com/api/docs/models/gpt-6.1-terra (2026-11-05)
+  - key: gpt-6.1-terra
+    provider: openai
+    model_id: gpt-6.1-terra
+    max_tokens: 1024
+    settings:
+      reasoning_effort: none
+
+  # OpenAI small model ("most efficient model for focused, high-volume tasks").
+  # Reasoning off ("none" accepted). GPT-6 Astra was not chosen: it rejects "none".
+  # Source: https://developers.openai.com/api/docs/models/gpt-6-luna (2026-11-05)
+  - key: gpt-6-luna
+    provider: openai
+    model_id: gpt-6-luna
+    max_tokens: 1024
+    settings:
+      reasoning_effort: none
+
+  # Google large model. Thinking cannot be turned off on this model (levels: low,
+  # medium, high), so the lowest level is used and recorded with every run.
+  # Thinking tokens count toward max_tokens (maxOutputTokens), so it bounds the cost.
+  # Sources: https://aistudio.google.com/docs/models and
+  #          https://aistudio.google.com/docs/thinking (2026-11-05)
+  - key: gemini-4-argon
+    provider: google
+    model_id: gemini-4-argon
+    max_tokens: 4096
+    settings:
+      thinking_level: low
+
+  # Google small model. Thinking cannot be turned off either; "minimal" is its lowest
+  # level (and its default), recorded with every run.
+  # Sources: https://aistudio.google.com/docs/models and
+  #          https://aistudio.google.com/docs/thinking (2026-11-05)
+  - key: gemini-3.5-flash-lite
+    provider: google
+    model_id: gemini-3.5-flash-lite
+    max_tokens: 2048
+    settings:
+      thinking_level: minimal
+
+  # Open-weight model (Mistral Ecosystem Open-Weight License; weights on Hugging Face as
+  # mistralai/Mistral-Large-4-1T-A52B), served by Mistral itself through OpenRouter.
+  # provider pins ONE endpoint ("mistral/zdr"; the "mistral/eu" endpoint has a different
+  # price), and fallbacks are off, so every call hits the same host and price.
+  # Reasoning cannot be turned off (efforts: low, medium, high), so "low" is recorded.
+  # Sources: https://openrouter.ai/mistralai/mistral-large-4-0/providers
+  #          https://huggingface.co/mistralai/Mistral-Large-4-1T-A52B (2026-11-05)
+  - key: mistral-large-4
+    provider: openrouter
+    model_id: mistralai/mistral-large-4-0
+    max_tokens: 4096
+    settings:
+      provider: mistral/zdr
+      reasoning_effort: low
