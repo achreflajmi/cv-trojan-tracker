@@ -1,3 +1,6 @@
 pnpm-lock.yaml
 SPEC.md
 CLAUDE.md
+
+# Prompts are frozen experiment inputs: a formatter must never change their bytes.
+battery/prompts/

@@ -11,12 +11,12 @@
     "noFallthroughCasesInSwitch": true,
     "verbatimModuleSyntax": true,
     "isolatedModules": true,
+    "erasableSyntaxOnly": true,
+    "allowImportingTsExtensions": true,
+    "noEmit": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "declaration": true,
-    "sourceMap": true,
-    "composite": true,
     "types": ["node"]
   }
 }

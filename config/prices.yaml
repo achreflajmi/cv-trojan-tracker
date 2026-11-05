@@ -1,0 +1,22 @@
+# Prices are entered by a human, with the date and the source. The tool never guesses.
+# Provider prices are in USD per million tokens; caps are in EUR (SPEC 4.5).
+#
+# usd_to_eur:
+#   rate: <EUR per 1 USD>
+#   date: YYYY-MM-DD
+#   source: <where the rate came from>
+#
+# models:
+#   <exact model_id from models.yaml>:
+#     input_usd_per_mtok: <number>
+#     output_usd_per_mtok: <number>
+#     date: YYYY-MM-DD
+#     source: <provider pricing page URL>
+usd_to_eur: null
+models:
+  # The fake adapter costs nothing; listed so cost code paths can run in tests.
+  fake-scripted-1:
+    input_usd_per_mtok: 0
+    output_usd_per_mtok: 0
+    date: 2026-11-05
+    source: fake adapter, free
