@@ -1,6 +1,6 @@
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { Job, Profile, injectedText, renderCv, type CvVariant } from '@ctt/corpus';
+import { injectedText, loadBattery, Profile, renderCv, type CvVariant } from '@ctt/corpus';
 import { extractWithPdfjs, hiddenTextPresent, PDFJS_VERSION } from '@ctt/extract';
 import { createAdapter } from '@ctt/providers';
 import {
@@ -39,7 +39,9 @@ export async function runStage1(opts: Stage1Options): Promise<void> {
   const models = loadYaml('config/models.yaml', ModelsConfig);
   const prices = loadYaml('config/prices.yaml', PricesConfig);
   const model = findModel(models, opts.modelKey);
-  const job = loadYaml('battery/jobs/junior-backend-engineer.yaml', Job);
+  const battery = loadBattery();
+  const job = battery.jobs.find((j) => j.slug === 'junior-backend-engineer');
+  if (!job) throw new Error('battery/jobs/junior-backend-engineer.yaml is missing');
   const profile = loadYaml('battery/fixtures/stage1-profile.yaml', Profile);
   const prompt = loadPrompt('battery/prompts/screener.v1.md', 'screener.v1');
   mkdirSync(opts.outDir, { recursive: true });
@@ -47,10 +49,10 @@ export async function runStage1(opts: Stage1Options): Promise<void> {
   // 1. Render, extract, check survival.
   const prepared = [];
   for (const { label, variant } of VARIANTS) {
-    const pdf = await renderCv(profile, job, variant);
+    const pdf = await renderCv(profile, job, variant, battery);
     writeFileSync(join(opts.outDir, `${label}.pdf`), pdf);
     const text = await extractWithPdfjs(pdf);
-    const hidden = injectedText(job, variant);
+    const hidden = injectedText(job, variant, battery);
     const survived = hidden === null ? null : hiddenTextPresent(text, hidden);
     const user = fillTemplate(prompt.userTemplate, { job: job.text.trim(), cv: text });
     prepared.push({ label, variant, pdfSha256: sha256(pdf), text, survived, user });

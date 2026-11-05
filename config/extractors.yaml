@@ -1,0 +1,12 @@
+# Absolute path of poppler's pdftotext per platform (SPEC 3.4). Some systems ship
+# xpdf's pdftotext under the same name (Git for Windows does), so the tool checks
+# that the binary really is poppler and records its version with every extraction.
+# The PDFTOTEXT_PATH environment variable overrides these.
+poppler:
+  pdftotext:
+    win32: C:\ProgramData\chocolatey\bin\pdftotext.exe
+    linux: /usr/bin/pdftotext
+    darwin: /opt/homebrew/bin/pdftotext
+  # Command-line arguments, recorded with every extraction. Default reading-order
+  # mode (no -layout), UTF-8 output, written to stdout.
+  args: ['-enc', 'UTF-8']

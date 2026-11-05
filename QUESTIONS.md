@@ -44,3 +44,20 @@ Prediction prompts are kept too. Answering them after the fact is less useful, s
 - [ ] **1.7** The first live call failed with HTTP 400 about a workspace header. How do you know from the status code alone that it was not billed, and why should a client never retry a 400?
 - [ ] **1.8** CLEAN scored 35 and DATA/WHITE 45. Why is this single pair not evidence that the injection works? What would you need?
 - [ ] **1.9** An API key ended up in a committed template file. List every place it could still exist after removing it from the file, and how each was handled.
+
+---
+
+## Stage 2 — Full corpus, hiding methods, extractors
+
+### Interview questions
+
+- [ ] **2.1** Why is the profile generator seeded with a string hashed by sha256 and a hand-written PRNG, instead of `Math.random()`?
+- [ ] **2.2** WHITE and RENDER3 give exactly the same extracted text as VIS_DATA. What does that imply for interpreting "the effect of hiding" in a text-based pipeline, and what would change in v2 (sending the PDF itself)?
+- [ ] **2.3** Why does OCG_OFF survive pdf.js but not poppler? Which one behaves like a "real" screening pipeline, and how would you find out?
+- [ ] **2.4** Why is HIDDEN_NEUTRAL length-matched to DATA, and what confound does it remove?
+- [ ] **2.5** The hiding-method tests lock in the measured extractor behaviour. Why is a test that fails after a library upgrade useful here rather than annoying?
+- [ ] **2.6** How does the pixel comparison prove invisibility, and what are its limits (renderer, resolution, viewer settings)?
+
+### Predictions
+
+- [ ] **2.P1** Before seeing the table: which hiding methods survive pdf.js, and which survive poppler? (Recorded: see PROGRESS.md finding F-1.)

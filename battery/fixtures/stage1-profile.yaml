@@ -3,6 +3,7 @@
 # no TypeScript, PostgreSQL, Docker or testing on the CV. That leaves room for the
 # hidden keywords to make a difference.
 id: stage1-medium-01
+seed: hand-written-fixture
 fit_band: medium
 name: Lina Marovic
 email: lina.marovic@example.com

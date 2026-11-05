@@ -1,0 +1,44 @@
+slug: data-analyst
+version: 1
+title: Data Analyst
+required_years: 1
+text: |
+  Data Analyst (synthetic job description for research)
+
+  We are a regional retail chain with 140 stores. Our analytics team supports
+  pricing, stock and marketing decisions with data.
+
+  What you will do:
+  - Write SQL queries to extract and combine sales and stock data.
+  - Clean and analyse data in Python (pandas) or R.
+  - Build and maintain dashboards in Power BI or Tableau.
+  - Present findings to non-technical managers.
+
+  Requirements:
+  - Degree in statistics, economics, mathematics, computer science or similar.
+  - At least 1 year of experience in a data or analytics role.
+  - Strong SQL skills.
+  - Experience with Python (pandas) or R for data analysis.
+  - Experience building dashboards (Power BI or Tableau).
+  - Good understanding of basic statistics (averages, variance, A/B tests).
+  - Clear written and spoken communication.
+key_requirements:
+  - SQL
+  - Python
+  - pandas
+  - R
+  - Power BI
+  - Tableau
+  - dashboards
+  - statistics
+  - A/B testing
+  - data cleaning
+vocab:
+  relevant_titles: [Data Analyst, Junior Data Analyst, BI Analyst]
+  adjacent_titles: [Reporting Assistant, Finance Assistant, Operations Coordinator]
+  unrelated_titles: [Barista, Retail Sales Assistant, Delivery Driver]
+  relevant_degrees: [BSc Statistics, BSc Economics]
+  adjacent_degrees: [BA Business Administration, BSc Geography]
+  unrelated_degrees: [BA Fine Arts, BA Philosophy]
+  adjacent_skills: [Excel, Google Sheets, pivot tables, presentations, VLOOKUP]
+  unrelated_skills: [Customer service, Food safety, Cash handling, Driving licence]
