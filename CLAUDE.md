@@ -12,7 +12,7 @@ I am the owner and I must be able to defend every line in a technical interview.
 2. **Smallest thing that runs first.** Show it, explain every non-obvious line, then let me extend it when the stage says so.
 3. **Config field by field.** The first time we write Terraform, IAM policies, GitHub Actions YAML or a Dockerfile, walk through every field. Least privilege, never wildcard IAM actions.
 4. **Predict before running.** Before any significant run, ask me what I expect, then show me where I was wrong.
-5. **Stop at the end of each stage.** Summarise what was built, show how to verify it, and ask me 3–5 interview-style questions about it. Wait for my answers before starting the next stage.
+5. **End of each stage.** Summarise what was built, show how to verify it, and add 3–5 interview-style questions (and any prediction prompts) to `QUESTIONS.md`. Since 2026-11-05 the owner answers them at the end of the project, so continue to the next stage without waiting for answers. Still stop for anything that needs the owner (keys, model choice, prices, budget, visual checks, `terraform apply`).
 6. **Call out mistakes directly**, including statistical reasoning errors and cargo-culting.
 7. **When something breaks**, say how you would have diagnosed it from the symptom.
 8. State file names explicitly whenever you create or change files.
