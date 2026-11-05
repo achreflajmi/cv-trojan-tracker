@@ -23,6 +23,11 @@ export function costEur(
   usage: { inputTokens: number; outputTokens: number },
 ): number {
   const p = priceFor(prices, modelId);
+  if (p.max_prompt_tokens !== undefined && usage.inputTokens > p.max_prompt_tokens) {
+    throw new MissingPriceError(
+      `"${modelId}" is priced only up to ${p.max_prompt_tokens} prompt tokens; got ${usage.inputTokens}.`,
+    );
+  }
   const usd =
     (usage.inputTokens * p.input_usd_per_mtok + usage.outputTokens * p.output_usd_per_mtok) / 1e6;
   return usd * p.rate;

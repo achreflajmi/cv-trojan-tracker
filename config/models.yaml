@@ -1,7 +1,7 @@
 # Models the tool may call. Model IDs live here only, never in code.
 # key:        name used on the command line (--model <key>)
 # provider:   which adapter to use
-# model_id:   exact ID sent to the provider API (chosen by the owner)
+# model_id:   exact ID sent to the provider API
 # max_tokens: output cap per call; also caps thinking tokens and the worst-case cost
 # temperature: omit to use the provider default (SPEC 3.9)
 # settings:   provider-specific; for anthropic:
@@ -14,10 +14,24 @@ models:
     model_id: fake-scripted-1
     max_tokens: 1024
 
-  # Owner: add the Stage 1 Anthropic model here, for example:
-  # - key: anthropic-stage1
-  #   provider: anthropic
-  #   model_id: <exact model ID>
-  #   max_tokens: 2048
-  #   settings:
-  #     thinking: <omit | disabled | between_tools | adaptive>
+  # Anthropic large model. Thinking cannot be disabled on this model (400 on
+  # `disabled`), so SPEC 3.9 "reasoning off" is approximated by the lowest effort,
+  # and that is recorded with every run. Temperature omitted: docs say to omit it.
+  # Source: https://platform.claude.com/docs/en/models/opus-5-5/migration-guide (2026-11-05)
+  - key: claude-opus-5-5
+    provider: anthropic
+    model_id: claude-opus-5-5
+    max_tokens: 4096
+    settings:
+      thinking: omit
+      effort: low
+
+  # Anthropic small model. Thinking is on by default but can be disabled at the
+  # default effort, so reasoning is off as SPEC 3.9 asks.
+  # Source: https://platform.claude.com/docs/en/models/haiku-5-5/whats-new-haiku-5-5 (2026-11-05)
+  - key: claude-haiku-5-5
+    provider: anthropic
+    model_id: claude-haiku-5-5
+    max_tokens: 1024
+    settings:
+      thinking: disabled

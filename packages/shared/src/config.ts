@@ -24,6 +24,8 @@ export const PricesConfig = z.strictObject({
     z.strictObject({
       input_usd_per_mtok: z.number().nonnegative(),
       output_usd_per_mtok: z.number().nonnegative(),
+      /** Prices only apply up to this prompt size; larger prompts are refused. */
+      max_prompt_tokens: z.number().int().positive().optional(),
       ...dated,
     }),
   ),

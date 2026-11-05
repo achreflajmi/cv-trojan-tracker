@@ -105,6 +105,25 @@ describe('cost', () => {
     expect(worstCaseCostEur(prices, 'paid', 1000, 2000)).toBeCloseTo(0.011);
   });
 
+  it('refuses a prompt above the priced tier instead of using the cheaper price', () => {
+    const tiered: PricesConfig = {
+      ...prices,
+      models: {
+        tiered: {
+          input_usd_per_mtok: 1,
+          output_usd_per_mtok: 1,
+          max_prompt_tokens: 100,
+          date: '2026-11-05',
+          source: 'test',
+        },
+      },
+    };
+    expect(costEur(tiered, 'tiered', { inputTokens: 100, outputTokens: 0 })).toBeGreaterThan(0);
+    expect(() => costEur(tiered, 'tiered', { inputTokens: 101, outputTokens: 0 })).toThrow(
+      MissingPriceError,
+    );
+  });
+
   it('refuses a model without a price', () => {
     expect(() => costEur(prices, 'unknown', { inputTokens: 1, outputTokens: 1 })).toThrow(
       MissingPriceError,

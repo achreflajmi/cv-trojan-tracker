@@ -31,13 +31,21 @@ export class AnthropicAdapter implements ModelAdapter {
   readonly provider = 'anthropic' as const;
   private readonly client: Anthropic;
 
-  constructor(apiKey = process.env.ANTHROPIC_API_KEY) {
+  constructor(
+    apiKey = process.env.ANTHROPIC_API_KEY,
+    workspaceId = process.env.ANTHROPIC_WORKSPACE_ID,
+  ) {
     // An explicit key from .env, so we never fall back to some other credential
     // (e.g. a CLI login profile) and bill a different account by accident.
     if (!apiKey) throw new Error('ANTHROPIC_API_KEY is not set (put it in .env)');
-    // maxRetries 0: the SDK would also retry 408/409 and dropped connections, where the
-    // first attempt may already have been billed. Retries follow our own policy instead.
-    this.client = new Anthropic({ apiKey, maxRetries: 0 });
+    this.client = new Anthropic({
+      apiKey,
+      // maxRetries 0: the SDK would also retry 408/409 and dropped connections, where the
+      // first attempt may already have been billed. Retries follow our own policy instead.
+      maxRetries: 0,
+      // Keys not scoped to a workspace must name one on every request.
+      ...(workspaceId ? { defaultHeaders: { 'anthropic-workspace-id': workspaceId } } : {}),
+    });
   }
 
   async call(req: CallRequest): Promise<CallResult> {
