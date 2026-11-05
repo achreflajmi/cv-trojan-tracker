@@ -1,8 +1,8 @@
-# PROGRESS.md ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â stage tracker, manual tasks and decision log
+# PROGRESS.md — stage tracker, manual tasks and decision log
 
 This file tracks the build of CV Trojan Tracker against `SPEC.md`. A box is ticked only when the item is done **and** verified. Owner = Achref (manual), Claude = assistant.
 
-Legend: `[x]` done ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â· `[ ]` to do ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â· `[~]` in progress / partly done ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â· **(OWNER)** = manual task only the owner can do ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â· **(DECISION)** = needs an owner decision before work continues.
+Legend: `[x]` done · `[ ]` to do · `[~]` in progress / partly done · **(OWNER)** = manual task only the owner can do · **(DECISION)** = needs an owner decision before work continues.
 
 Last updated: 2026-11-05
 
@@ -14,7 +14,7 @@ Last updated: 2026-11-05
 | ----- | ---------------------------------------------- | -------------------------------------------------- |
 | 0     | Repo scaffold                                  | [~] Local done; CI not yet run on GitHub           |
 | 1     | First end-to-end call (1 job, 1 profile)       | [x] Done 2026-11-05 (CLEAN 35, DATA/WHITE 45; n=1) |
-| 2     | Full corpus, hiding methods, extractors        | [ ] Not started                                    |
+| 2     | Full corpus, hiding methods, extractors        | [x] Done 2026-11-05 (owner visual check open)      |
 | 3     | Database, idempotent trials, resume            | [ ] Not started                                    |
 | 4     | All providers, zod validation, rate limits     | [ ] Not started                                    |
 | 5     | Queue, budget guard, plan/run/status, stopping | [ ] Not started                                    |
@@ -23,7 +23,7 @@ Last updated: 2026-11-05
 | 8     | AWS infrastructure (Terraform) + OIDC CI       | [ ] Not started                                    |
 | 9     | First full run, publish, DOI, README           | [ ] Not started                                    |
 
-Rules that apply to every stage (from `CLAUDE.md`): explain before code; smallest thing that runs first; predict before running; stop at the end of the stage with a summary, verification steps and 3ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œ5 interview questions; wait for the owner's answers before starting the next stage. No paid API call without a EUR budget confirmed in that session.
+Rules that apply to every stage (from `CLAUDE.md`): explain before code; smallest thing that runs first; predict before running; stop at the end of the stage with a summary, verification steps and 3–5 interview questions; wait for the owner's answers before starting the next stage. No paid API call without a EUR budget confirmed in that session.
 
 ---
 
@@ -31,13 +31,13 @@ Rules that apply to every stage (from `CLAUDE.md`): explain before code; smalles
 
 - [x] Read `CLAUDE.md` and `SPEC.md`; restate the project in plain words (done 2026-11-04)
 - [x] Review the spec and list risks in section 3 and 4.5 (16 items, see "Spec review decisions" below)
-- [x] **(OWNER)** Answer the 16 spec review proposals ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â all accepted 2026-11-05; `SPEC.md` updated to v1.1
+- [x] **(OWNER)** Answer the 16 spec review proposals — all accepted 2026-11-05; `SPEC.md` updated to v1.1
 - [x] `.env` created from `.env.example` with a random local Postgres password; Postgres volume recreated so it uses it (2026-11-05)
 - [ ] **(OWNER)** Add API keys to `.env` when the stage needs them (Anthropic: Stage 1; OpenAI, Gemini, OpenRouter: Stage 4)
 
 ---
 
-## Stage 0 ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â Repo scaffold
+## Stage 0 — Repo scaffold
 
 **Goal:** an empty but complete workspace where tests, lint and CI all run, so every later stage starts from a green baseline.
 
@@ -63,10 +63,10 @@ Rules that apply to every stage (from `CLAUDE.md`): explain before code; smalles
 - [x] `pnpm install --frozen-lockfile` succeeds
 - [x] `pnpm lint` passes (ESLint + Prettier)
 - [x] `pnpm typecheck` passes
-- [x] `pnpm test` ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â 1 test passed
-- [x] `docker compose up -d --wait` ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â postgres and redis healthy; `select version()` ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ PostgreSQL 16.15; `redis-cli ping` ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ PONG
+- [x] `pnpm test` — 1 test passed
+- [x] `docker compose up -d --wait` — postgres and redis healthy; `select version()` → PostgreSQL 16.15; `redis-cli ping` → PONG
 - [x] Branch `stage-0-scaffold` created and committed (2026-11-05)
-- [ ] Branch pushed and PR opened ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â blocked: github.com not resolvable from this machine; `gh` token expired (`gh auth refresh -h github.com`)
+- [ ] Branch pushed and PR opened — blocked: github.com not resolvable from this machine; `gh` token expired (`gh auth refresh -h github.com`)
 - [ ] CI green on GitHub
 
 ### Manual tasks
@@ -81,9 +81,9 @@ Moved to `QUESTIONS.md`.
 
 ---
 
-## Stage 1 ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â First end-to-end call
+## Stage 1 — First end-to-end call
 
-**Goal:** prove the whole idea works once, with the smallest possible pipeline: PDF ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ extracted text ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ model ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ score. No database.
+**Goal:** prove the whole idea works once, with the smallest possible pipeline: PDF → extracted text → model → score. No database.
 
 **Done when (SPEC):** two scores printed; raw responses saved to a JSON file; no DB yet.
 
@@ -115,11 +115,11 @@ Moved to `QUESTIONS.md`.
 
 ### Decisions needed
 
-- [x] **(DECISION)** Proposal #15 (idempotency key includes `inputs_sha256`) ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â accepted
+- [x] **(DECISION)** Proposal #15 (idempotency key includes `inputs_sha256`) — accepted
 
 ---
 
-## Stage 2 ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â Full corpus, hiding methods, extractors
+## Stage 2 — Full corpus, hiding methods, extractors
 
 **Goal:** generate the whole CV battery and measure, for every hiding method and extractor, whether the hidden text reaches the model at all.
 
@@ -127,14 +127,14 @@ Moved to `QUESTIONS.md`.
 
 ### Build tasks
 
-- [ ] `packages/corpus`: seeded profile generator (same seed ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ same profile), fit bands decided by rules (strong / medium / weak)
+- [x] `packages/corpus`: seeded profile generator (mulberry32 PRNG seeded from sha256; same seed → same profile), fit bands by rule
 - [x] 4 jobs with vocabulary and `required_years`: junior backend engineer, data analyst, marketing manager, nurse
 - [x] Profiles per job: 36 (12 strong / 12 medium / 12 weak) (#1); names unique within a job
 - [x] Conditions: `CLEAN`, `DATA`, `INSTR`, `VIS_DATA`, `HIDDEN_NEUTRAL`, `VIS_INSTR` (#7); texts in `battery/injections.yaml` and `battery/common.yaml`
-- [ ] Hiding methods: `WHITE`, `TINY` (ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â°Ãƒâ€šÃ‚Â¤ 1 pt), `OFFPAGE`, `RENDER3`, `OCG_OFF` (OCG needs low-level pdf-lib objects)
+- [x] Hiding methods: `WHITE`, `TINY` (0.5 pt), `OFFPAGE` (x = page width + 100), `RENDER3` (Tr 3), `OCG_OFF` (layer OFF in default view)
 - [x] `packages/extract`: `pdfjs` and `poppler` extractors; poppler path in `config/extractors.yaml`, verified to be poppler (not xpdf), version recorded
-- [ ] Survival check per CV ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â extractor: is the hidden text present in the extracted text?
-- [x] Hash of extracted text stored; 5,184 extractions → 1,800 distinct model inputs (2.9x fewer calls)
+- [x] Survival check per CV × extractor: is the hidden text present in the extracted text?
+- [x] Hash of extracted text stored; 5,184 extractions ? 1,800 distinct model inputs (2.9x fewer calls)
 - [x] CLI: `ctt generate` (2,592 PDFs, 12 s), `ctt extract` (72 s), `ctt survival`
 - [x] Unit tests per hiding method: PDF opens; visible text equals CLEAN; survival per extractor as recorded; pixel comparison with CLEAN (poppler render)
 - [x] Unit tests: generator determinism, band rules, unique names, one-page fit, neutral-text length (61 tests total)
@@ -149,11 +149,11 @@ Moved to `QUESTIONS.md`.
 
 ### Decisions needed
 
-- [x] **(DECISION)** Proposals #1 (profiles vs repeats), #4 (dedupe by extracted text), #6 (fit bands as primary), #7 (extra controls), #9 (extractor path/version) ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â accepted
+- [x] **(DECISION)** Proposals #1 (profiles vs repeats), #4 (dedupe by extracted text), #6 (fit bands as primary), #7 (extra controls), #9 (extractor path/version) — accepted
 
 ---
 
-## Stage 3 ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â Database, idempotent trials, resume after kill
+## Stage 3 — Database, idempotent trials, resume after kill
 
 **Goal:** every trial and every paid call is recorded in Postgres, and restarting after a crash never pays for a trial twice.
 
@@ -164,10 +164,10 @@ Moved to `QUESTIONS.md`.
 - [ ] `packages/db`: numbered plain-SQL migrations (never edited after merge) + a small migration runner
 - [ ] Tables (SPEC 4.3): `model`, `job`, `profile`, `cv_document`, `extraction`, `experiment`, `run`, `trial`, `trial_input`, `call`, `budget_ledger`
 - [ ] `trial.idempotency_key UNIQUE`; key includes `inputs_sha256` (#15)
-- [ ] `call.status` claimed ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ completed/failed; partial unique index (one completed call per trial); orphaned claims kept in the ledger (#16)
+- [ ] `call.status` claimed → completed/failed; partial unique index (one completed call per trial); orphaned claims kept in the ledger (#16)
 - [ ] Typed queries
-- [ ] Test: kill mid-run ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ restart ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ zero duplicate `call` rows
-- [ ] Test: idempotency key stability (same inputs ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ same key; different CV ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ different key)
+- [ ] Test: kill mid-run → restart → zero duplicate `call` rows
+- [ ] Test: idempotency key stability (same inputs → same key; different CV → different key)
 
 ### Manual tasks
 
@@ -177,11 +177,11 @@ Moved to `QUESTIONS.md`.
 
 ### Decisions needed
 
-- [x] **(DECISION)** Proposals #15 and #16 ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â accepted
+- [x] **(DECISION)** Proposals #15 and #16 — accepted
 
 ---
 
-## Stage 4 ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â All providers behind the adapter
+## Stage 4 — All providers behind the adapter
 
 **Goal:** the same trial runs on Anthropic, OpenAI, Google and OpenRouter through one interface, with validated outputs and polite rate limiting.
 
@@ -201,17 +201,17 @@ Moved to `QUESTIONS.md`.
 
 - [ ] **(OWNER)** Add `OPENAI_API_KEY`, `GEMINI_API_KEY`, `OPENROUTER_API_KEY` to `.env`
 - [ ] **(OWNER)** Choose the 6 models + 1 open-weight model, with exact dated model IDs, in `config/models.yaml`
-- [ ] **(OWNER)** Enter every model's price in `config/prices.yaml` (dated, with source), plus the USDÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢EUR rate (proposal #12)
+- [ ] **(OWNER)** Enter every model's price in `config/prices.yaml` (dated, with source), plus the USD→EUR rate (proposal #12)
 - [ ] **(OWNER)** Confirm a EUR budget for the live integration test run
 - [ ] **(OWNER)** Answer the Stage 4 questions in `QUESTIONS.md` (end of project)
 
 ---
 
-## Stage 5 ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â Queue, budget guard, CLI run commands, sequential stopping
+## Stage 5 — Queue, budget guard, CLI run commands, sequential stopping
 
 **Goal:** runs are queued, parallel, resumable and **cannot exceed the budget**; cells stop sampling when the result is precise enough.
 
-**Done when (SPEC):** a small paid run (owner-approved cap ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â°Ãƒâ€šÃ‚Â¤ EUR 5) completes and stops correctly at the cap in a test with a fake adapter.
+**Done when (SPEC):** a small paid run (owner-approved cap ≤ EUR 5) completes and stops correctly at the cap in a test with a fake adapter.
 
 ### Build tasks
 
@@ -229,18 +229,18 @@ Moved to `QUESTIONS.md`.
 ### Manual tasks
 
 - [ ] **(OWNER)** Set the caps in `config/budget.yaml`
-- [ ] **(OWNER)** Approve the small paid run cap (ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â°Ãƒâ€šÃ‚Â¤ EUR 5)
+- [ ] **(OWNER)** Approve the small paid run cap (≤ EUR 5)
 - [ ] **(OWNER)** Predict the number of calls and the cost before `ctt plan`
 - [ ] **(OWNER)** Answer the Stage 5 questions in `QUESTIONS.md` (end of project)
 
 ### Decisions needed
 
-- [x] **(DECISION)** Proposals #8, #10, #11, #12, #13, #14 ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â accepted
+- [x] **(DECISION)** Proposals #8, #10, #11, #12, #13, #14 — accepted
 - [ ] **(OWNER)** Target total EUR budget for the first full run (#14)
 
 ---
 
-## Stage 6 ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â Analysis (Python) and export
+## Stage 6 — Analysis (Python) and export
 
 **Goal:** turn raw calls into effect sizes with honest uncertainty, checked independently of the TypeScript engine.
 
@@ -253,9 +253,9 @@ Moved to `QUESTIONS.md`.
 - [ ] Metrics: score lift, advance-rate lift, rank lift, top-3 rate (definitions per decided proposals #2, #5)
 - [ ] Paired bootstrap (10,000 resamples, resampling profiles)
 - [ ] A/A noise floor / minimum effect size (proposal #3)
-- [ ] BenjaminiÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œHochberg at FDR 0.05 (family defined in prereg)
+- [ ] Benjamini–Hochberg at FDR 0.05 (family defined in prereg)
 - [ ] Figures
-- [ ] Planted-effect test: known lift of +8 ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ CI contains 8
+- [ ] Planted-effect test: known lift of +8 → CI contains 8
 
 ### Manual tasks
 
@@ -264,11 +264,11 @@ Moved to `QUESTIONS.md`.
 
 ### Decisions needed
 
-- [x] **(DECISION)** Proposals #2, #3, #5, #6 ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â accepted
+- [x] **(DECISION)** Proposals #2, #3, #5, #6 — accepted
 
 ---
 
-## Stage 7 ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â Results web page
+## Stage 7 — Results web page
 
 **Goal:** a static page anyone can read: headline effect, per-model chart with CIs, survival table, methodology, dataset download.
 
@@ -279,7 +279,7 @@ Moved to `QUESTIONS.md`.
 - [ ] `apps/web`: Next.js + Tailwind, static export, reads exported JSON only (no live DB)
 - [ ] Headline numbers with CI and noise floor
 - [ ] Per-model chart with CIs
-- [ ] Method ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â extractor survival table
+- [ ] Method × extractor survival table
 - [ ] Methodology page (prereg commit hash shown)
 - [ ] Dataset download
 
@@ -290,7 +290,7 @@ Moved to `QUESTIONS.md`.
 
 ---
 
-## Stage 8 ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â AWS infrastructure
+## Stage 8 — AWS infrastructure
 
 **Goal:** scheduled, reproducible runs in the cloud with least-privilege access and no long-lived CI secrets.
 
@@ -314,7 +314,7 @@ Moved to `QUESTIONS.md`.
 
 ---
 
-## Stage 9 ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â First full run and publication
+## Stage 9 — First full run and publication
 
 **Goal:** the pre-registered run, a citable dataset and a public results page.
 
@@ -353,7 +353,7 @@ Decisions already made, with the reason. Newest at the bottom.
 | D-007 | 2026-11-04 | CI token `permissions: contents: read`                                                                                                                    | Least privilege                                                                                                                               | Claude |
 | D-008 | 2026-11-04 | GitHub Actions pinned to current majors: checkout v7, setup-node v7, pnpm/action-setup v6                                                                 | Latest releases checked with `gh api`                                                                                                         | Claude |
 | D-009 | 2026-11-05 | `PROGRESS.md` is the single tracker for stages, manual tasks and decisions                                                                                | Owner request                                                                                                                                 | Owner  |
-| D-010 | 2026-11-05 | All 16 spec-review proposals accepted; `SPEC.md` ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ v1.1                                                           | See "Spec review decisions"                                                                                                                   | Owner  |
+| D-010 | 2026-11-05 | All 16 spec-review proposals accepted; `SPEC.md` → v1.1                                                                                                   | See "Spec review decisions"                                                                                                                   | Owner  |
 | D-013 | 2026-11-05 | No build step: Node 24 runs `.ts` directly (type stripping); `tsc` only type-checks (`noEmit`)                                                            | Less tooling to explain and maintain; `erasableSyntaxOnly` keeps code strippable                                                              | Claude |
 | D-014 | 2026-11-05 | Anthropic SDK `maxRetries: 0`; no refusal `fallbacks`                                                                                                     | SDK retries 408/409/connection errors that may already be billed; fallbacks would answer with a different model and corrupt per-model results | Claude |
 | D-015 | 2026-11-05 | Provider JSON schema is minimal; ranges/lengths enforced by zod (`ScoreOutput`)                                                                           | Not every provider's structured-output mode supports min/max/maxLength; one validator for all providers                                       | Claude |
@@ -368,7 +368,7 @@ Decisions already made, with the reason. Newest at the bottom.
 | D-024 | 2026-11-05 | Measured extractor behaviour is locked in tests (`EXPECTED_SURVIVAL`)                                                                                     | An extractor upgrade that changes what models see must fail CI and be reviewed                                                                | Claude |
 | D-025 | 2026-11-05 | Generated profiles and PDFs are not committed; they are reproducible from seeds (determinism tested)                                                      | Avoids 2,592 binary files in git                                                                                                              | Claude |
 | D-012 | 2026-11-05 | Interview questions and predictions collected in `QUESTIONS.md`; build continues without waiting for answers                                              | Owner request; `CLAUDE.md` rule 5 updated                                                                                                     | Owner  |
-| D-011 | 2026-11-05 | Idempotency key uses extracted-text hashes (not extraction IDs)                                                                                           | Same text ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ same key, which implements deduplication (#4) for free                                    | Claude |
+| D-011 | 2026-11-05 | Idempotency key uses extracted-text hashes (not extraction IDs)                                                                                           | Same text → same key, which implements deduplication (#4) for free                                                                            | Claude |
 
 ---
 
@@ -380,24 +380,24 @@ Concrete values chosen when applying them (owner can override before `prereg.yam
 
 Still open: the **target total EUR budget** for the first full run (#14), set by the owner in `prereg.yaml`.
 
-| #   | Area      | Problem                                                                                                                                                                                  | Proposal                                                                                                                                                              | Status   |
-| --- | --------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- |
-| 1   | 3.1 / 3.7 | CI width is set by between-profile variance; more repeats cannot shrink it, so cells run to the 50 cap. 12 clusters is too few for a reliable bootstrap                                  | 30ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œ40 profiles per job, 3ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œ5 repeats; average repeats within profile, then pair by profile | Accepted |
-| 2   | 3.6       | "Same repeat index" pairing is meaningless (calls are independent)                                                                                                                       | Remove it from the score-lift definition; pair by profile                                                                                                             | Accepted |
-| 3   | 3.6 / 3.8 | A/A noise floor overlaps with the CI and shrinks to zero with more data                                                                                                                  | Keep A/A as a sanity check; define "effect" as CI excludes 0 **and** ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â°Ãƒâ€šÃ‚Â¥ a pre-registered minimum (e.g. 3 points)                        | Accepted |
-| 4   | 3.3 / 3.4 | With extracted text, several hiding methods likely give identical model input ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ paying up to 5ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â for the same experiment | Hash extracted text, call models once per distinct text; method effect = survival ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â text effect                                              | Accepted |
-| 5   | 3.5 / 3.6 | Rank-task pools and "comparable pools" are undefined                                                                                                                                     | Define in prereg: same pool ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â± injection of candidate X; which X (weak/medium); which 5 in the 5-of-10 pool                                         | Accepted |
-| 6   | 3.1 / 3.5 | Ceiling effect for strong candidates; "advance" not defined                                                                                                                              | Report by fit band, medium/weak primary; prompt defines "advance"                                                                                                     | Accepted |
-| 7   | 3.2       | No length-matched neutral hidden-text control; no visible-instruction control                                                                                                            | Optional: add `HIDDEN_NEUTRAL` and `VIS_INSTR`                                                                                                                        | Accepted |
-| 8   | 3.7       | Sequential stopping runs in TypeScript but the bootstrap is in Python                                                                                                                    | Engine stops on a pre-registered t-interval of per-profile differences; Python bootstrap for reporting                                                                | Accepted |
-| 9   | 3.4       | Two `pdftotext` on the machine: Git's is xpdf 4.00, not poppler                                                                                                                          | Configure the absolute path; record extractor name + version in `extraction`                                                                                          | Accepted |
-| 10  | 4.5       | "In-flight calls finish" can overshoot the cap by concurrency ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â max call cost                                                                                   | Reserve worst-case cost before each call, settle after                                                                                                                | Accepted |
-| 11  | 4.5       | Output tokens, reasoning tokens and stopping make the call count/cost uncertain                                                                                                          | `ctt plan` shows an upper bound (repeat cap, `max_tokens`) plus a typical estimate                                                                                    | Accepted |
-| 12  | 4.5       | Providers price in USD; caps are in EUR                                                                                                                                                  | Human-entered, dated USDÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢EUR rate in `prices.yaml`; cached-input/batch prices if used                                         | Accepted |
-| 13  | 4.5       | Interaction of `--confirm-budget`, per-run cap and monthly cap undefined                                                                                                                 | Effective cap = min of the three; month in UTC                                                                                                                        | Accepted |
-| 14  | 3 / 4.5   | Full design ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â°Ãƒâ€¹Ã¢â‚¬Â  403,000 score calls at the cap before rank tasks and A/A                                                                                 | Reduce via #1 and #4; agree a target total budget                                                                                                                     | Accepted |
-| 15  | 4.4       | Idempotency key omits the CV/condition/method/extractor ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ CLEAN and DATA trials collide                                                          | Add a hash of the ordered trial inputs (extracted-text hashes) to the key                                                                                             | Accepted |
-| 16  | 4.4       | UNIQUE row ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â°Ãƒâ€šÃ‚Â  no double spend: a crash after the API answers but before the insert pays twice on resume                                                    | Write a "claimed" row before each call; claimed-without-result counts as possibly paid                                                                                | Accepted |
+| #   | Area      | Problem                                                                                                                                                 | Proposal                                                                                                        | Status   |
+| --- | --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------- | -------- |
+| 1   | 3.1 / 3.7 | CI width is set by between-profile variance; more repeats cannot shrink it, so cells run to the 50 cap. 12 clusters is too few for a reliable bootstrap | 30–40 profiles per job, 3–5 repeats; average repeats within profile, then pair by profile                       | Accepted |
+| 2   | 3.6       | "Same repeat index" pairing is meaningless (calls are independent)                                                                                      | Remove it from the score-lift definition; pair by profile                                                       | Accepted |
+| 3   | 3.6 / 3.8 | A/A noise floor overlaps with the CI and shrinks to zero with more data                                                                                 | Keep A/A as a sanity check; define "effect" as CI excludes 0 **and** ≥ a pre-registered minimum (e.g. 3 points) | Accepted |
+| 4   | 3.3 / 3.4 | With extracted text, several hiding methods likely give identical model input → paying up to 5× for the same experiment                                 | Hash extracted text, call models once per distinct text; method effect = survival × text effect                 | Accepted |
+| 5   | 3.5 / 3.6 | Rank-task pools and "comparable pools" are undefined                                                                                                    | Define in prereg: same pool ± injection of candidate X; which X (weak/medium); which 5 in the 5-of-10 pool      | Accepted |
+| 6   | 3.1 / 3.5 | Ceiling effect for strong candidates; "advance" not defined                                                                                             | Report by fit band, medium/weak primary; prompt defines "advance"                                               | Accepted |
+| 7   | 3.2       | No length-matched neutral hidden-text control; no visible-instruction control                                                                           | Optional: add `HIDDEN_NEUTRAL` and `VIS_INSTR`                                                                  | Accepted |
+| 8   | 3.7       | Sequential stopping runs in TypeScript but the bootstrap is in Python                                                                                   | Engine stops on a pre-registered t-interval of per-profile differences; Python bootstrap for reporting          | Accepted |
+| 9   | 3.4       | Two `pdftotext` on the machine: Git's is xpdf 4.00, not poppler                                                                                         | Configure the absolute path; record extractor name + version in `extraction`                                    | Accepted |
+| 10  | 4.5       | "In-flight calls finish" can overshoot the cap by concurrency × max call cost                                                                           | Reserve worst-case cost before each call, settle after                                                          | Accepted |
+| 11  | 4.5       | Output tokens, reasoning tokens and stopping make the call count/cost uncertain                                                                         | `ctt plan` shows an upper bound (repeat cap, `max_tokens`) plus a typical estimate                              | Accepted |
+| 12  | 4.5       | Providers price in USD; caps are in EUR                                                                                                                 | Human-entered, dated USD→EUR rate in `prices.yaml`; cached-input/batch prices if used                           | Accepted |
+| 13  | 4.5       | Interaction of `--confirm-budget`, per-run cap and monthly cap undefined                                                                                | Effective cap = min of the three; month in UTC                                                                  | Accepted |
+| 14  | 3 / 4.5   | Full design ≈ 403,000 score calls at the cap before rank tasks and A/A                                                                                  | Reduce via #1 and #4; agree a target total budget                                                               | Accepted |
+| 15  | 4.4       | Idempotency key omits the CV/condition/method/extractor → CLEAN and DATA trials collide                                                                 | Add a hash of the ordered trial inputs (extracted-text hashes) to the key                                       | Accepted |
+| 16  | 4.4       | UNIQUE row ≠ no double spend: a crash after the API answers but before the insert pays twice on resume                                                  | Write a "claimed" row before each call; claimed-without-result counts as possibly paid                          | Accepted |
 
 ---
 
