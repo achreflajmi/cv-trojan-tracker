@@ -12,7 +12,7 @@ Last updated: 2026-11-05
 
 | Stage | Name                                           | Status                                             |
 | ----- | ---------------------------------------------- | -------------------------------------------------- |
-| 0     | Repo scaffold                                  | [~] Local done; CI not yet run on GitHub           |
+| 0     | Repo scaffold                                  | [x] Done 2026-11-05 (CI green, PR #1)              |
 | 1     | First end-to-end call (1 job, 1 profile)       | [x] Done 2026-11-05 (CLEAN 35, DATA/WHITE 45; n=1) |
 | 2     | Full corpus, hiding methods, extractors        | [x] Done 2026-11-05 (owner visual check open)      |
 | 3     | Database, idempotent trials, resume            | [x] Done 2026-11-05                                |
@@ -66,8 +66,8 @@ Rules that apply to every stage (from `CLAUDE.md`): explain before code; smalles
 - [x] `pnpm test` — 1 test passed
 - [x] `docker compose up -d --wait` — postgres and redis healthy; `select version()` → PostgreSQL 16.15; `redis-cli ping` → PONG
 - [x] Branch `stage-0-scaffold` created and committed (2026-11-05)
-- [ ] Branch pushed and PR opened — blocked: github.com not resolvable from this machine; `gh` token expired (`gh auth refresh -h github.com`)
-- [ ] CI green on GitHub
+- [x] Branches pushed after the owner added the `workflow` scope; one stacked PR per stage: #1 (Stage 0 → main), #2 (Stage 1), #3 (Stage 2), #4 (Stage 3)
+- [x] CI green on GitHub for all four PRs (database and kill/resume tests ran on Linux, none skipped)
 
 ### Manual tasks
 
