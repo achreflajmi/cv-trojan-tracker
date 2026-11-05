@@ -38,3 +38,9 @@ Prediction prompts are kept too. Answering them after the fact is less useful, s
 
 - [ ] **1.P1** Before the first live run: what score will the model give the CLEAN CV and the DATA/WHITE CV (0–100), and will either be "advance"?
 - [ ] **1.P2** Will the hidden white text survive pdf.js extraction? (Recorded result: yes, all 10 keywords, as the last line of the extracted text.)
+
+### Added after the first live call
+
+- [ ] **1.7** The first live call failed with HTTP 400 about a workspace header. How do you know from the status code alone that it was not billed, and why should a client never retry a 400?
+- [ ] **1.8** CLEAN scored 35 and DATA/WHITE 45. Why is this single pair not evidence that the injection works? What would you need?
+- [ ] **1.9** An API key ended up in a committed template file. List every place it could still exist after removing it from the file, and how each was handled.
