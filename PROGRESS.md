@@ -65,7 +65,8 @@ Rules that apply to every stage (from `CLAUDE.md`): explain before code; smalles
 - [x] `pnpm typecheck` passes
 - [x] `pnpm test` — 1 test passed
 - [x] `docker compose up -d --wait` — postgres and redis healthy; `select version()` → PostgreSQL 16.15; `redis-cli ping` → PONG
-- [ ] Branch `stage-0-scaffold` created, committed, pushed, PR opened
+- [x] Branch `stage-0-scaffold` created and committed (2026-11-05)
+- [ ] Branch pushed and PR opened — blocked: github.com not resolvable from this machine; `gh` token expired (`gh auth refresh -h github.com`)
 - [ ] CI green on GitHub
 
 ### Manual tasks
