@@ -16,6 +16,24 @@ jobs:
   check:
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    # A throwaway Postgres for the database tests (schema, idempotency, kill/resume).
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: ctt
+          POSTGRES_PASSWORD: ci-only-password # not a secret: exists only inside this CI job
+          POSTGRES_DB: ctt
+        ports:
+          - 5432:5432
+        # Wait until Postgres accepts connections before the steps start.
+        options: >-
+          --health-cmd "pg_isready -U ctt -d ctt"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 10
+    env:
+      DATABASE_URL: postgres://ctt:ci-only-password@localhost:5432/ctt
     steps:
       - uses: actions/checkout@v7
       - uses: pnpm/action-setup@v6
