@@ -2,12 +2,16 @@ import { describe, expect, it } from 'vitest';
 import {
   costEur,
   inputsSha256,
+  loadYaml,
   MissingPriceError,
+  ModelsConfig,
+  PricesConfig,
+  ProvidersConfig,
   parseOutput,
+  rankOutputFor,
   ScoreOutput,
   trialKey,
   worstCaseCostEur,
-  type PricesConfig,
   type TrialKeyParts,
 } from './index.ts';
 
@@ -33,6 +37,25 @@ describe('parseOutput', () => {
     ],
   ])('returns null for %s (an unparseable outcome, not an exception)', (_, raw) => {
     expect(parseOutput(raw, ScoreOutput)).toBeNull();
+  });
+});
+
+describe('rank output', () => {
+  const schema = rankOutputFor(['c1', 'c2', 'c3']);
+
+  it('accepts a permutation of the pool', () => {
+    expect(parseOutput('{"ranking": ["c3", "c1", "c2"]}', schema)).toEqual({
+      ranking: ['c3', 'c1', 'c2'],
+    });
+  });
+
+  it.each([
+    ['a missing candidate', '{"ranking": ["c3", "c1"]}'],
+    ['a duplicate', '{"ranking": ["c3", "c3", "c1"]}'],
+    ['an unknown candidate', '{"ranking": ["c3", "c1", "c9"]}'],
+    ['an extra field', '{"ranking": ["c3", "c1", "c2"], "note": "x"}'],
+  ])('returns null for %s', (_, raw) => {
+    expect(parseOutput(raw, schema)).toBeNull();
   });
 });
 
@@ -136,5 +159,42 @@ describe('cost', () => {
       MissingPriceError,
     );
     expect(costEur(noRate, 'free', { inputTokens: 1, outputTokens: 1 })).toBe(0);
+  });
+
+  it('refuses a promotional price after its last valid day (UTC)', () => {
+    const promo: PricesConfig = {
+      ...prices,
+      models: {
+        promo: {
+          input_usd_per_mtok: 2,
+          output_usd_per_mtok: 10,
+          valid_until: '2026-11-30',
+          date: '2026-11-05',
+          source: 'test',
+        },
+      },
+    };
+    const usage = { inputTokens: 1, outputTokens: 1 };
+    expect(costEur(promo, 'promo', usage, new Date('2026-11-30T23:59:59Z'))).toBeGreaterThan(0);
+    expect(() => costEur(promo, 'promo', usage, new Date('2026-12-01T00:00:00Z'))).toThrow(
+      MissingPriceError,
+    );
+  });
+});
+
+describe('config files', () => {
+  it('config/providers.yaml has a policy for every real provider', () => {
+    const config = loadYaml('config/providers.yaml', ProvidersConfig);
+    for (const p of ['anthropic', 'openai', 'google', 'openrouter'] as const) {
+      expect(config.providers[p]?.max_concurrency).toBeGreaterThan(0);
+    }
+  });
+
+  it('every model in config/models.yaml has a price (CLAUDE.md: never guess)', () => {
+    const models = loadYaml('config/models.yaml', ModelsConfig);
+    const prices = loadYaml('config/prices.yaml', PricesConfig);
+    for (const m of models.models) {
+      expect(prices.models[m.model_id], `price for ${m.model_id}`).toBeDefined();
+    }
   });
 });
