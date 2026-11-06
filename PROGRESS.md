@@ -203,7 +203,11 @@ Moved to `QUESTIONS.md`.
 - [x] OpenRouter: one pinned upstream endpoint, fallbacks off, `:variant` model IDs rejected by the config schema
 - [x] Unit tests per adapter with the HTTP layer mocked (139 tests total)
 - [x] Live tests in `*.live.test.ts`, run only with `RUN_LIVE=1 pnpm test:live`
-- [ ] Live integration test: one trial per provider succeeds (needs keys + budget)
+- [~] Live integration test: one trial per provider succeeds
+  - [x] Anthropic: live call succeeded in Stage 1 (`claude-opus-5-5`)
+  - [x] Google: `gemini-3.5-flash-lite` on the free tier, 2026-11-06: schema-valid score, returned model `gemini-3.5-flash-lite`, finish `STOP`, 27 in / 44 out tokens, EUR 0
+  - [ ] OpenAI: key in `.env`, account balance $0 (owner has no budget for it now)
+  - [ ] OpenRouter: no key (owner has no budget for it now)
 
 ### Manual tasks
 
@@ -425,10 +429,11 @@ Still open: the **target total EUR budget** for the first full run (#14), set by
 
 ## Budget ledger (paid calls)
 
-| Date       | What                                                               | Model           | Calls | Cost EUR | Session budget left |
-| ---------- | ------------------------------------------------------------------ | --------------- | ----- | -------- | ------------------- |
-| 2026-11-05 | Stage 1 first try (HTTP 400, workspace header missing; not billed) | claude-opus-5-5 | 2     | 0        | 1.000               |
-| 2026-11-05 | Stage 1 live run                                                   | claude-opus-5-5 | 2     | 0.011    | 0.989               |
+| Date       | What                                                               | Model                 | Calls | Cost EUR | Session budget left |
+| ---------- | ------------------------------------------------------------------ | --------------------- | ----- | -------- | ------------------- |
+| 2026-11-05 | Stage 1 first try (HTTP 400, workspace header missing; not billed) | claude-opus-5-5       | 2     | 0        | 1.000               |
+| 2026-11-05 | Stage 1 live run                                                   | claude-opus-5-5       | 2     | 0.011    | 0.989               |
+| 2026-11-06 | Stage 4 Gemini live test (free tier, no billing configured)        | gemini-3.5-flash-lite | 2     | 0        | 0.989               |
 
 ## Environment notes (owner's machine)
 
