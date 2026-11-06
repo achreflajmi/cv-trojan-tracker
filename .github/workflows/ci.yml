@@ -68,7 +68,7 @@ jobs:
         working-directory: analysis
     steps:
       - uses: actions/checkout@v7
-      - uses: astral-sh/setup-uv@v10
+      - uses: astral-sh/setup-uv@v10.3.3 # this action publishes no moving major tag
         with:
           python-version: '3.12'
       # --locked fails if uv.lock is out of date, like pnpm --frozen-lockfile.
