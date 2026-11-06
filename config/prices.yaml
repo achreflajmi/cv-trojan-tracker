@@ -48,10 +48,12 @@ models:
     date: 2026-11-05
     source: https://developers.openai.com/api/docs/pricing
 
-  # Google: paid tier, standard. Output price includes thinking tokens. Promotional
-  # price: "$2.00 / $10.00 through November 30, 2026. $4.00 / $20.00 starting
-  # December 1, 2026". valid_until makes the tool refuse to price calls after that
-  # day, so the owner must enter the new price then. No prompt-size tiers.
+  # Google: paid tier, standard. Output price includes thinking tokens. The page lists a
+  # dated price change: "$2.00 / $10.00 through November 30, 2026. $4.00 / $20.00
+  # starting December 1, 2026". valid_until makes the tool refuse to price calls after
+  # that day, so the new price must be entered then. No prompt-size tiers.
+  # gemini-4-argon is NOT available on Google's free tier: its key needs billing on.
+  # Prices re-verified against the official page on 2026-11-06.
   gemini-4-argon:
     input_usd_per_mtok: 2
     output_usd_per_mtok: 10
