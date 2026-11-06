@@ -74,3 +74,21 @@ jobs:
       # --locked fails if uv.lock is out of date, like pnpm --frozen-lockfile.
       - run: uv sync --locked
       - run: uv run pytest -q
+
+  # The results page must build statically (SPEC Stage 7). In CI there are no real
+  # results, so it builds from the clearly marked sample fixture.
+  web:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter @ctt/web build
+        env:
+          NEXT_TELEMETRY_DISABLED: '1'
+      - run: test -f apps/web/out/index.html && test -f apps/web/out/methodology/index.html

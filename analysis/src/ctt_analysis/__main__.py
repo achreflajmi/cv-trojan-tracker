@@ -50,6 +50,9 @@ def main() -> None:
         if rank_file.exists()
         else []
     )
+    # Results from the fake development model are never presented as a measurement.
+    if any(m.get("provider") == "fake" for m in meta.get("models", [])):
+        meta = {**meta, "sample": True, "note": "Contains output of the fake development model, not a real AI model."}
     results["meta"] = meta
     results = to_jsonable(results)
 

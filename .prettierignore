@@ -7,3 +7,8 @@ battery/prompts/
 # Python project and generated data
 analysis/
 data/
+apps/web/.next/
+apps/web/out/
+apps/web/generated/
+apps/web/public/data/
+apps/web/fixtures/

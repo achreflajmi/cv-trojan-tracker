@@ -19,7 +19,7 @@ Last updated: 2026-11-05
 | 4     | All providers, zod validation, rate limits     | [~] Code done; live test needs keys + budget       |
 | 5     | Queue, budget guard, plan/run/status, stopping | [x] Done 2026-11-06 (rank task still open)         |
 | 6     | Python analysis + export                       | [x] Done 2026-11-06                                |
-| 7     | Results web page                               | [ ] Not started                                    |
+| 7     | Results web page                               | [x] Done 2026-11-06 (sample data until Stage 9)    |
 | 8     | AWS infrastructure (Terraform) + OIDC CI       | [ ] Not started                                    |
 | 9     | First full run, publish, DOI, README           | [ ] Not started                                    |
 
@@ -294,12 +294,14 @@ Moved to `QUESTIONS.md`.
 
 ### Build tasks
 
-- [ ] `apps/web`: Next.js + Tailwind, static export, reads exported JSON only (no live DB)
-- [ ] Headline numbers with CI and noise floor
-- [ ] Per-model chart with CIs
-- [ ] Method × extractor survival table
-- [ ] Methodology page (prereg commit hash shown)
-- [ ] Dataset download
+- [x] `apps/web`: Next.js 16 + Tailwind 4.3.3 (pinned: passes pnpm's release-age rule), static export, reads `results.json` only (no live DB)
+- [x] Headline numbers with CI, A/A noise floor and date; "no effect" wording when nothing passes the rule
+- [x] Per-model forest chart with CIs (SVG, validated palette, legend, ✱ for effects, tooltips, table view); rank table
+- [x] Method × extractor survival table (measured)
+- [x] Methodology page (prereg commit shown when present)
+- [x] Data page with downloads and the "verify it yourself" command
+- [x] Sample banner whenever results are synthetic or contain the fake development model (guard in the analysis and the page)
+- [x] CI builds the site; unit tests for headline selection and formatting; visually checked in a headless browser
 
 ### Manual tasks
 
@@ -408,6 +410,8 @@ Decisions already made, with the reason. Newest at the bottom.
 | D-046 | 2026-11-06 | Rank task uses a fixed, pre-registered number of repeats (no sequential stopping)                                                                                                                                                                                                  | Rank lift is measured per pool, not per profile, so the t-interval stopping rule has nothing to pair; fixing repeats in advance keeps it pre-registered | Claude |
 | D-047 | 2026-11-06 | Rank pools are not deduplicated across labels; the pool label records extractor, pool, k, variant and target                                                                                                                                                                       | Keeps the export self-describing; rank trials are few compared with score trials                                                                        | Claude |
 | D-048 | 2026-11-06 | Rank lift unit = pool; bootstrap over pools stratified by job; separate BH family from the headline score lifts                                                                                                                                                                    | The pool is the independent unit; the headline claim is the score lift                                                                                  | Claude |
+| D-049 | 2026-11-06 | The page builds from real results if present, otherwise from a sample fixture with fake model names; any results containing the fake development model are marked `sample`                                                                                                         | Synthetic or fake-model numbers must never look like a measurement (found when the build picked up the fake pilot run)                                  | Claude |
+| D-050 | 2026-11-06 | Chart is server-rendered SVG with native tooltips and a table view, no chart library                                                                                                                                                                                               | Static export, no client JS needed; accessible without hover or color                                                                                   | Claude |
 | D-012 | 2026-11-05 | Interview questions and predictions collected in `QUESTIONS.md`; build continues without waiting for answers                                                                                                                                                                       | Owner request; `CLAUDE.md` rule 5 updated                                                                                                               | Owner  |
 | D-011 | 2026-11-05 | Idempotency key uses extracted-text hashes (not extraction IDs)                                                                                                                                                                                                                    | Same text → same key, which implements deduplication (#4) for free                                                                                      | Claude |
 
