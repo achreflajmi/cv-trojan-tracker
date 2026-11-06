@@ -22,3 +22,7 @@ __pycache__/
 # OS / editor
 .DS_Store
 Thumbs.db
+
+# analysis outputs (recomputed from the exported dataset)
+analysis/.pytest_cache/
+results/

@@ -18,7 +18,7 @@ Last updated: 2026-11-05
 | 3     | Database, idempotent trials, resume            | [x] Done 2026-11-05                                |
 | 4     | All providers, zod validation, rate limits     | [~] Code done; live test needs keys + budget       |
 | 5     | Queue, budget guard, plan/run/status, stopping | [x] Done 2026-11-06 (rank task still open)         |
-| 6     | Python analysis + export                       | [ ] Not started                                    |
+| 6     | Python analysis + export                       | [x] Done 2026-11-06                                |
 | 7     | Results web page                               | [ ] Not started                                    |
 | 8     | AWS infrastructure (Terraform) + OIDC CI       | [ ] Not started                                    |
 | 9     | First full run, publish, DOI, README           | [ ] Not started                                    |
@@ -264,18 +264,20 @@ Moved to `QUESTIONS.md`.
 
 ### Build tasks
 
-- [ ] `analysis/` project with `uv` (Python 3.12, pandas, NumPy, SciPy, matplotlib, pytest)
-- [ ] `ctt export --experiment <name> --out data/` (CSV + JSON)
-- [ ] Metrics: score lift, advance-rate lift, rank lift, top-3 rate (definitions per decided proposals #2, #5)
-- [ ] Paired bootstrap (10,000 resamples, resampling profiles)
-- [ ] A/A noise floor / minimum effect size (proposal #3)
-- [ ] Benjamini–Hochberg at FDR 0.05 (family defined in prereg)
-- [ ] Figures
-- [ ] Planted-effect test: known lift of +8 → CI contains 8
+- [x] `analysis/` project with `uv` (Python 3.12, pandas, NumPy, SciPy, matplotlib, PyYAML, pytest); `uv.lock` committed; separate CI job
+- [x] `ctt export --experiment <name> --out data/export`: `calls.csv` (one row per call × CV variant it stands for), `survival.csv`, `meta.json`
+- [x] Metrics: score lift and advance-rate lift per profile (repeats averaged), per fit band; unparseable rate (rank lift / top-3: with the rank task)
+- [x] Paired bootstrap: 10,000 resamples of profiles, stratified by job, seeded; percentile CI; two-sided bootstrap p-value
+- [x] A/A cell next to every model × extractor; minimum effect size of interest 3 points (#3)
+- [x] Benjamini–Hochberg at FDR 0.05; family = all primary-band score lifts
+- [x] Effect = CI excludes 0 AND |lift| ≥ 3 AND BH-adjusted p ≤ 0.05
+- [x] Figures: forest plot per extractor (validated palette; direct labels; ✱ marks effects)
+- [x] Planted-effect test: +8 → CI contains 8 and is an effect; 0 → not an effect; small-but-significant (1 point) → not an effect; A/A centred on 0; bootstrap CI coverage ≈ 95% by simulation; BH known example (8 tests)
+- [x] `uv run ctt-analyze ../data/export --out ../data/results` recomputes everything from the dataset (settings read from `prereg.yaml`)
 
 ### Manual tasks
 
-- [ ] **(OWNER)** Predict CI width on the planted dataset before running
+- [ ] **(OWNER)** Predict CI width on the planted dataset (in `QUESTIONS.md`, 6.P1)
 - [ ] **(OWNER)** Answer the Stage 6 questions in `QUESTIONS.md` (end of project)
 
 ### Decisions needed
@@ -400,6 +402,9 @@ Decisions already made, with the reason. Newest at the bottom.
 | D-040 | 2026-11-06 | Stopping batch = one repeat over all active inputs; CLEAN keeps sampling while any cell that uses it does; A/A uses a second CLEAN arm (`pool = 'aa'`)                                                                                                                             | SPEC 3.6/3.7 with #1, #3, #8                                                                                                                        | Claude |
 | D-041 | 2026-11-06 | New command `ctt ingest` (not in SPEC 5) loads the corpus into Postgres                                                                                                                                                                                                            | `plan`/`run` read from the database; keeps `generate`/`extract` free of DB dependencies                                                             | Claude |
 | D-042 | 2026-11-06 | pnpm build script of `msgpackr-extract` denied; `minimumReleaseAgeExclude` lets `bullmq@6.7.1` and `@anthropic-ai/sdk@1.5.0` in although newer than pnpm's release-age rule                                                                                                        | Native add-on is optional (JS fallback). The age exclusions weaken a supply-chain guard: revisit before Stage 9 and pin versions that pass the rule | Claude |
+| D-043 | 2026-11-06 | Export fans each call out to every CV variant whose extracted text it used (incl. variants not named in the experiment)                                                                                                                                                            | Identical model input = identical measurement; dedup must not hide data                                                                             | Claude |
+| D-044 | 2026-11-06 | Bootstrap stratified by job; percentile CI; p-value = 2·min(share ≤ 0, share ≥ 0) with +1 correction                                                                                                                                                                               | Keeps each job's share in every resample; p never exactly 0                                                                                         | Claude |
+| D-045 | 2026-11-06 | BH family = every primary-band score lift across models, extractors and variants                                                                                                                                                                                                   | SPEC 3.7; the strictest family that matches the headline claims                                                                                     | Claude |
 | D-012 | 2026-11-05 | Interview questions and predictions collected in `QUESTIONS.md`; build continues without waiting for answers                                                                                                                                                                       | Owner request; `CLAUDE.md` rule 5 updated                                                                                                           | Owner  |
 | D-011 | 2026-11-05 | Idempotency key uses extracted-text hashes (not extraction IDs)                                                                                                                                                                                                                    | Same text → same key, which implements deduplication (#4) for free                                                                                  | Claude |
 

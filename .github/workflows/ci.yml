@@ -58,3 +58,19 @@ jobs:
       - run: pnpm lint
       - run: pnpm typecheck
       - run: pnpm test
+
+  # The analysis is checked independently of the TypeScript engine (SPEC 3.7).
+  analysis:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: analysis
+    steps:
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@v10
+        with:
+          python-version: '3.12'
+      # --locked fails if uv.lock is out of date, like pnpm --frozen-lockfile.
+      - run: uv sync --locked
+      - run: uv run pytest -q

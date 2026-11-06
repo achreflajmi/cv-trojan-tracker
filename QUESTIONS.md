@@ -114,3 +114,20 @@ Prediction prompts are kept too. Answering them after the fact is less useful, s
 ### Predictions
 
 - [ ] **5.P1** Before `ctt plan` for the pilot: how many distinct model inputs would you expect from 24 profiles, and why fewer than 24 × (1 CLEAN + 8 variants + 1 A/A)? (Recorded: 120.)
+
+---
+
+## Stage 6 — Analysis and export
+
+### Interview questions
+
+- [ ] **6.1** Why resample profiles and not individual calls? What would happen to the CI width if you resampled calls?
+- [ ] **6.2** Why stratify the bootstrap by job?
+- [ ] **6.3** What exactly does the BH correction control, and why is the family "all primary-band score lifts" rather than one family per model?
+- [ ] **6.4** The 1-point lift test has a CI that excludes zero but is not reported as an effect. Defend that rule to a reviewer who says "but it is significant".
+- [ ] **6.5** Why is the analysis in Python, separate from the TypeScript engine, and why does it read only the exported CSV?
+- [ ] **6.6** One call fans out to several variants in `calls.csv`. Does that inflate the evidence for the cells that share it? Why or why not?
+
+### Predictions
+
+- [ ] **6.P1** For the planted dataset (108 profiles, 72 in the primary bands, 3 repeats, call noise SD 6): roughly how wide will the 95% CI of the lift be?

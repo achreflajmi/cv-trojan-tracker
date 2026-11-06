@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { createPool, migrate } from '@ctt/db';
 import { extract, generate, survival } from './corpus.ts';
 import { ingest, plan, run, status } from './engine.ts';
+import { exportExperiment } from './export.ts';
 import { runStage1 } from './stage1.ts';
 
 const USAGE = `Usage: pnpm ctt <command> [options]
@@ -19,6 +20,8 @@ Commands:
              Run (or resume) an experiment for one model; needs REDIS_URL
   status --run <id>
              Progress and spend of a run
+  export --experiment <name> [--out <dir>]
+             CSV + JSON for analysis/ and apps/web (default data/export)
   stage1 --model <key> [--confirm-budget <EUR>] [--out <dir>]
              Render CLEAN and DATA/WHITE CVs, extract with pdf.js, score each once`;
 
@@ -74,6 +77,11 @@ async function main(argv: string[]): Promise<void> {
       );
     case 'status':
       return status(Id.parse(required(values.run, 'run')));
+    case 'export':
+      return exportExperiment(
+        required(values.experiment, 'experiment'),
+        values.out === 'data/stage1' ? 'data/export' : values.out,
+      );
     case 'stage1': {
       const budget = values['confirm-budget'];
       await runStage1({
