@@ -12,7 +12,7 @@ from pathlib import Path
 import pandas as pd
 import yaml
 
-from .analyze import Settings, analyze, survival_table, to_jsonable
+from .analyze import Settings, analyze, rank_analysis, survival_table, to_jsonable
 from .figures import forest_plot
 
 
@@ -41,8 +41,15 @@ def main() -> None:
     survival = pd.read_csv(args.export_dir / "survival.csv", keep_default_na=False, na_values=[""])
     meta = json.loads((args.export_dir / "meta.json").read_text(encoding="utf-8"))
 
-    results = analyze(calls, settings_from_prereg(args.prereg))
+    settings = settings_from_prereg(args.prereg)
+    results = analyze(calls, settings)
     results["survival"] = survival_table(survival)
+    rank_file = args.export_dir / "rank.csv"
+    results["rank_cells"] = (
+        rank_analysis(pd.read_csv(rank_file, keep_default_na=False, na_values=[""]), settings)
+        if rank_file.exists()
+        else []
+    )
     results["meta"] = meta
     results = to_jsonable(results)
 

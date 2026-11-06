@@ -70,6 +70,72 @@ export async function exportCalls(db: Db, experiment: string): Promise<ExportCal
   }));
 }
 
+export interface ExportRankInput {
+  runId: number;
+  provider: string;
+  modelId: string;
+  trialId: number;
+  pool: string;
+  repeatIndex: number;
+  parsed: unknown;
+  costEur: number;
+  job: string;
+  position: number;
+  profile: string;
+  condition: string;
+  hidingMethod: string | null;
+}
+
+/** Completed rank calls with every pool member in presentation order (one row per member). */
+export async function exportRankInputs(db: Db, experiment: string): Promise<ExportRankInput[]> {
+  const { rows } = await db.query<{
+    run_id: string;
+    provider: string;
+    model_id: string;
+    trial_id: string;
+    pool: string;
+    repeat_index: number;
+    parsed_json: unknown;
+    cost_eur: string;
+    slug: string;
+    position: number;
+    external_id: string;
+    condition: string;
+    hiding_method: string | null;
+  }>(
+    `SELECT r.id AS run_id, m.provider, m.model_id, t.id AS trial_id, t.pool_composition AS pool,
+            t.repeat_index, c.parsed_json, c.cost_eur, j.slug, ti.position, p.external_id,
+            d.condition, d.hiding_method
+     FROM call c
+     JOIN trial t ON t.id = c.trial_id
+     JOIN run r ON r.id = t.run_id
+     JOIN experiment x ON x.id = r.experiment_id
+     JOIN model m ON m.id = r.model_id
+     JOIN job j ON j.id = t.job_id
+     JOIN trial_input ti ON ti.trial_id = t.id
+     JOIN cv_document d ON d.id = ti.cv_document_id
+     JOIN profile p ON p.id = d.profile_id
+     WHERE x.name = $1 AND c.status = 'completed' AND t.task = 'rank'
+     ORDER BY t.id, ti.position`,
+    [experiment],
+  );
+  return rows.map((r) => ({
+    runId: Number(r.run_id),
+    provider: r.provider,
+    modelId: r.model_id,
+    trialId: Number(r.trial_id),
+    pool: r.pool,
+    repeatIndex: r.repeat_index,
+    parsed: r.parsed_json,
+    costEur: Number(r.cost_eur),
+    job: r.slug,
+    position: r.position,
+    profile: r.external_id,
+    condition: r.condition,
+    hidingMethod: r.hiding_method,
+  }));
+}
+
 export interface ExportVariant {
   jobId: number;
   job: string;

@@ -131,3 +131,19 @@ Prediction prompts are kept too. Answering them after the fact is less useful, s
 ### Predictions
 
 - [ ] **6.P1** For the planted dataset (108 profiles, 72 in the primary bands, 3 repeats, call noise SD 6): roughly how wide will the 95% CI of the lift be?
+
+---
+
+## Rank task (SPEC 3.5)
+
+### Interview questions
+
+- [ ] **R.1** Why must every injected pool have a matched clean pool with the same ten profiles? What would a comparison across different pools confound?
+- [ ] **R.2** Why is the candidate order shuffled per repeat, and why are the candidate IDs assigned by position (C1..C10) rather than by profile?
+- [ ] **R.3** Why is the target drawn from the medium/weak bands?
+- [ ] **R.4** A rank test failed with one seed. How did you decide whether it was a bug or bad luck, and what did the 30-seed check show?
+- [ ] **R.5** Why is the bootstrap anti-conservative with 24 clusters, and what are two ways to fix it?
+
+### Predictions
+
+- [ ] **R.P1** In a 5-of-10 pool, will the target gain more or fewer places than in a 1-of-10 pool? Why (Baxi et al.)?

@@ -67,23 +67,37 @@ export async function loadPlanRows(
 export interface TrialRequestData {
   trialId: number;
   idempotencyKey: string;
+  task: string;
   jobText: string;
-  cvText: string;
+  /** CV texts in presentation order (trial_input.position): one for score, the pool for rank. */
+  cvTexts: string[];
 }
 
 export async function trialRequestData(db: Db, trialId: number): Promise<TrialRequestData> {
-  const { rows } = await db.query<{ idempotency_key: string; job_text: string; cv_text: string }>(
-    `SELECT t.idempotency_key, j.text AS job_text, e.text AS cv_text
+  const { rows } = await db.query<{
+    idempotency_key: string;
+    task: string;
+    job_text: string;
+    cv_text: string;
+  }>(
+    `SELECT t.idempotency_key, t.task, j.text AS job_text, e.text AS cv_text
      FROM trial t
      JOIN job j ON j.id = t.job_id
-     JOIN trial_input ti ON ti.trial_id = t.id AND ti.position = 0
+     JOIN trial_input ti ON ti.trial_id = t.id
      JOIN extraction e ON e.id = ti.extraction_id
-     WHERE t.id = $1`,
+     WHERE t.id = $1
+     ORDER BY ti.position`,
     [trialId],
   );
   const r = rows[0];
   if (!r) throw new Error(`trial ${trialId} has no input`);
-  return { trialId, idempotencyKey: r.idempotency_key, jobText: r.job_text, cvText: r.cv_text };
+  return {
+    trialId,
+    idempotencyKey: r.idempotency_key,
+    task: r.task,
+    jobText: r.job_text,
+    cvTexts: rows.map((x) => x.cv_text),
+  };
 }
 
 /** Valid scores of a run, keyed by job, inputs hash and arm (pool composition). */

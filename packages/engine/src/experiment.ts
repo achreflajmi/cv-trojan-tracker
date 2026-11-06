@@ -6,7 +6,15 @@ export const Experiment = z
     name: z.string().regex(/^[a-z0-9-]+$/),
     prompt: z.string().min(1),
     prompt_version: z.string().min(1),
-    task: z.literal('score'), // the rank task (SPEC 3.5) is planned before Stage 9
+    task: z.enum(['score', 'rank']),
+    /** Rank task only (SPEC 3.5): matched pools per job, 0 / 1 / k injected. */
+    rank: z
+      .strictObject({
+        pools_per_job: z.number().int().positive(),
+        pool_size: z.number().int().min(3),
+        compositions: z.array(z.number().int().nonnegative()).min(2),
+      })
+      .optional(),
     jobs: z.array(z.string().min(1)).min(1),
     fit_bands: z.array(z.enum(['strong', 'medium', 'weak'])).min(1),
     conditions: z
@@ -26,6 +34,17 @@ export const Experiment = z
   })
   .refine((e) => e.stopping.min_repeats <= e.stopping.max_repeats, {
     message: 'min_repeats must be <= max_repeats',
+  })
+  .refine((e) => e.task !== 'rank' || e.rank !== undefined, {
+    message: 'a rank experiment needs a `rank` section',
+  })
+  // Rank lift has no per-profile pairing for the t-interval stopping rule, so the
+  // number of repeats is fixed in advance (pre-registered) instead.
+  .refine((e) => e.task !== 'rank' || e.stopping.min_repeats === e.stopping.max_repeats, {
+    message: 'rank experiments use a fixed number of repeats: min_repeats must equal max_repeats',
+  })
+  .refine((e) => e.task !== 'rank' || (e.rank?.compositions.includes(0) ?? false), {
+    message: 'rank compositions must include 0 (the matched clean pool)',
   });
 export type Experiment = z.infer<typeof Experiment>;
 
