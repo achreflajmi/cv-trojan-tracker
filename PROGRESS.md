@@ -20,7 +20,7 @@ Last updated: 2026-11-05
 | 5     | Queue, budget guard, plan/run/status, stopping | [x] Done 2026-11-06 (rank task still open)         |
 | 6     | Python analysis + export                       | [x] Done 2026-11-06                                |
 | 7     | Results web page                               | [x] Done 2026-11-06 (sample data until Stage 9)    |
-| 8     | AWS infrastructure (Terraform) + OIDC CI       | [ ] Not started                                    |
+| 8     | AWS infrastructure (Terraform) + OIDC CI       | [~] Code + validate done; plan/apply = owner       |
 | 9     | First full run, publish, DOI, README           | [ ] Not started                                    |
 
 Rules that apply to every stage (from `CLAUDE.md`): explain before code; smallest thing that runs first; predict before running; stop at the end of the stage with a summary, verification steps and 3–5 interview questions; wait for the owner's answers before starting the next stage. No paid API call without a EUR budget confirmed in that session.
@@ -318,11 +318,12 @@ Moved to `QUESTIONS.md`.
 
 ### Build tasks
 
-- [ ] `infra/` Terraform: S3 (PDFs, exports), scheduled ECS task, RDS or small Postgres, Secrets Manager
-- [ ] IAM: least privilege, no wildcard actions (walked through field by field)
-- [ ] Dockerfile for the runner (walked through field by field)
-- [ ] GitHub Actions with OIDC (no static AWS keys)
-- [ ] `terraform plan` output produced for review
+- [x] `infra/` Terraform (AWS provider 6.72, Terraform 1.17): VPC without NAT, private RDS PostgreSQL 16 (db.t4g.micro, RDS-managed password), S3 (private, versioned, TLS-only), ECR (immutable, scan on push), Secrets Manager (values set by owner), ECS Fargate ARM64 task with Redis sidecar, EventBridge Scheduler (created **disabled**, no retries)
+- [x] IAM: four roles, every action named; `scripts/check-iam.mjs` fails CI on any wildcard action (only `ecr:GetAuthorizationToken` has Resource `*`, which AWS requires)
+- [x] Dockerfile (Node 24 slim, poppler, RDS CA bundle, CLI deps only, `--ignore-scripts`, non-root) — built and smoke-tested locally; the smoke test found two real bugs (missing production dependency, unreadable CA bundle), both fixed
+- [x] GitHub Actions deploy with OIDC (trust limited to this repo's `main`), skipped until the owner sets the role variable
+- [x] `terraform fmt` + `terraform validate` pass (locally via the official image, and in a new CI job `infra`)
+- [ ] `terraform plan` reviewed by the owner (needs AWS credentials; steps in `infra/README.md`)
 
 ### Manual tasks
 
@@ -412,6 +413,11 @@ Decisions already made, with the reason. Newest at the bottom.
 | D-048 | 2026-11-06 | Rank lift unit = pool; bootstrap over pools stratified by job; separate BH family from the headline score lifts                                                                                                                                                                    | The pool is the independent unit; the headline claim is the score lift                                                                                  | Claude |
 | D-049 | 2026-11-06 | The page builds from real results if present, otherwise from a sample fixture with fake model names; any results containing the fake development model are marked `sample`                                                                                                         | Synthetic or fake-model numbers must never look like a measurement (found when the build picked up the fake pilot run)                                  | Claude |
 | D-050 | 2026-11-06 | Chart is server-rendered SVG with native tooltips and a table view, no chart library                                                                                                                                                                                               | Static export, no client JS needed; accessible without hover or color                                                                                   | Claude |
+| D-051 | 2026-11-06 | No NAT gateway: runner in a public subnet with a public IP and no inbound rules; RDS private                                                                                                                                                                                       | Saves ~USD 35/month; nothing can connect to the runner                                                                                                  | Claude |
+| D-052 | 2026-11-06 | Redis as a sidecar container instead of ElastiCache                                                                                                                                                                                                                                | The queue only lives for one run; the database is the source of truth                                                                                   | Claude |
+| D-053 | 2026-11-06 | RDS password generated and stored by RDS in Secrets Manager; injected as PG* env vars; TLS verified with the RDS CA bundle                                                                                                                                                         | Password never in code, Terraform state or plan output                                                                                                  | Claude |
+| D-054 | 2026-11-06 | Schedule created disabled, no automatic retries; `confirm_budget_eur` variable (validated ≤ 50) is the owner's budget confirmation for scheduled runs                                                                                                                              | A paid run must never start without an explicit owner action                                                                                            | Claude |
+| D-055 | 2026-11-06 | Results page to be hosted on GitHub Pages, not S3 + CloudFront                                                                                                                                                                                                                     | Free and enough for a static site                                                                                                                       | Claude |
 | D-012 | 2026-11-05 | Interview questions and predictions collected in `QUESTIONS.md`; build continues without waiting for answers                                                                                                                                                                       | Owner request; `CLAUDE.md` rule 5 updated                                                                                                               | Owner  |
 | D-011 | 2026-11-05 | Idempotency key uses extracted-text hashes (not extraction IDs)                                                                                                                                                                                                                    | Same text → same key, which implements deduplication (#4) for free                                                                                      | Claude |
 

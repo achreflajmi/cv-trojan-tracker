@@ -1,0 +1,16 @@
+# Never send secrets or local state into the image build context.
+.env
+.env.*
+!.env.example
+.git
+**/node_modules
+data/
+analysis/
+infra/
+apps/web/.next
+apps/web/out
+apps/web/generated
+apps/web/public/data
+battery/profiles/
+.claude/
+coverage/
