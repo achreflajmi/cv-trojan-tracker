@@ -17,7 +17,7 @@ Claude writes and validates this code; **the owner runs `plan` and `apply`** (CL
 | IAM: execution, task, scheduler and GitHub OIDC roles                   | least privilege; `node scripts/check-iam.mjs` proves no wildcard actions | 0                                                              |
 
 Model API costs come on top and are capped by `confirm_budget_eur` and `config/budget.yaml`.
-To pay nothing while the project is idle: `terraform destroy` (RDS keeps a final snapshot) or stop the RDS instance.
+To pay (almost) nothing while the project is idle, stop the RDS instance (AWS restarts a stopped instance after 7 days), or tear everything down: set `deletion_protection = false` in `database.tf`, apply, then `terraform destroy` (RDS keeps a final snapshot). Deletion protection is on by design, so the measurements cannot be dropped by accident.
 
 ## Owner steps
 
