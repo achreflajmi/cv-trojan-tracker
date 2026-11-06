@@ -9,6 +9,7 @@
   "dependencies": {
     "@ctt/corpus": "workspace:*",
     "@ctt/db": "workspace:*",
+    "@ctt/engine": "workspace:*",
     "@ctt/extract": "workspace:*",
     "@ctt/providers": "workspace:*",
     "@ctt/shared": "workspace:*",

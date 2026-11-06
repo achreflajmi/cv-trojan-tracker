@@ -96,3 +96,21 @@ Prediction prompts are kept too. Answering them after the fact is less useful, s
 ### Predictions
 
 - [ ] **4.P1** Before the first live call per provider: which provider's answer is most likely to be unparseable or refused, and why?
+
+---
+
+## Stage 5 — Queue, budget guard, plan/run/status, sequential stopping
+
+### Interview questions
+
+- [ ] **5.1** BullMQ and the database both "know" which trials are done. Which one is the source of truth, and why can a duplicated queue job never pay twice?
+- [ ] **5.2** Why does BullMQ get `attempts: 1`, when retrying failed jobs is normally the point of a queue?
+- [ ] **5.3** The stopping rule uses a t-interval; the reported CI uses a paired bootstrap. Why two methods, and is stopping on precision (not on the effect) a form of p-hacking?
+- [ ] **5.4** Why must CLEAN keep sampling while any cell that uses it is still sampling, even if CLEAN's own cells have stopped?
+- [ ] **5.5** The OFFPAGE cell stops after the minimum repeats with a lift of exactly 0 and a zero-width interval. Why is that correct, and why is it not a "measured" zero?
+- [ ] **5.6** Explain the circuit breaker: what failure mode did the resume test expose, and why does a failed run stay resumable?
+- [ ] **5.7** `plan` shows an upper bound of EUR 47.80 but a typical cost of EUR 2.39 for Opus. Where does the 20x gap come from, and which number should `--confirm-budget` cover?
+
+### Predictions
+
+- [ ] **5.P1** Before `ctt plan` for the pilot: how many distinct model inputs would you expect from 24 profiles, and why fewer than 24 × (1 CLEAN + 8 variants + 1 A/A)? (Recorded: 120.)
