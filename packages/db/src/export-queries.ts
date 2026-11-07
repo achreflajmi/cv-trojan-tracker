@@ -70,6 +70,19 @@ export async function exportCalls(db: Db, experiment: string): Promise<ExportCal
   }));
 }
 
+/** The experiment row: prompt version and the prereg commit recorded by `ctt run`. */
+export async function exportExperimentInfo(
+  db: Db,
+  experiment: string,
+): Promise<{ promptVersion: string; preregCommit: string | null } | null> {
+  const { rows } = await db.query<{ prompt_version: string; prereg_commit: string | null }>(
+    'SELECT prompt_version, prereg_commit FROM experiment WHERE name = $1',
+    [experiment],
+  );
+  const r = rows[0];
+  return r ? { promptVersion: r.prompt_version, preregCommit: r.prereg_commit } : null;
+}
+
 export interface ExportRankInput {
   runId: number;
   provider: string;

@@ -3,6 +3,7 @@ import { join } from 'node:path';
 import {
   createPool,
   exportCalls,
+  exportExperimentInfo,
   exportRankInputs,
   exportVariants,
   type ExportRankInput,
@@ -153,8 +154,11 @@ export async function exportExperiment(experiment: string, outDir: string): Prom
         ]),
       ).values(),
     ];
+    const info = await exportExperimentInfo(db, experiment);
     const meta = {
       experiment,
+      prompt_version: info?.promptVersion ?? null,
+      prereg_commit: info?.preregCommit ?? null,
       exported_at: new Date().toISOString(),
       calls: calls.length,
       rows: rows.length,

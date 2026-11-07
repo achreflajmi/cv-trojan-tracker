@@ -1,0 +1,18 @@
+# The pre-registered score experiment (SPEC 3, prereg.yaml). Do not edit after the
+# first full run: create full-v2.yaml and record the reason in prereg.v2.yaml.
+name: full
+prompt: battery/prompts/screener.v1.md
+prompt_version: screener.v1
+task: score
+jobs: [data-analyst, junior-backend-engineer, marketing-manager, nurse]
+fit_bands: [strong, medium, weak] # all are run; medium + weak are the primary analysis
+conditions: [CLEAN, DATA, INSTR, VIS_DATA, HIDDEN_NEUTRAL, VIS_INSTR]
+hiding_methods: [WHITE, TINY, OFFPAGE, RENDER3, OCG_OFF]
+extractors: [pdfjs, poppler]
+include_aa: true
+stopping:
+  min_repeats: 3
+  max_repeats: 10
+  # Half of the minimum effect size of interest (3 points): an effect at the threshold
+  # is then distinguishable from zero.
+  target_half_width: 1.5
