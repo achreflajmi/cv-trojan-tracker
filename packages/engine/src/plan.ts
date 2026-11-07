@@ -22,8 +22,8 @@ export interface PlannedInput {
   jobId: number;
   pool: string;
   inputsSha256: string;
-  extractionId: number;
-  cvDocumentId: number;
+  /** Inputs in canonical order (score: one CV; rank: the pool, sorted by profile). */
+  inputs: { cvDocumentId: number; extractionId: number }[];
   user: string;
   worstCaseEur: number;
 }
@@ -73,8 +73,7 @@ export function buildPlan(
         jobId: row.jobId,
         pool: POOL[arm],
         inputsSha256: hash,
-        extractionId: row.extractionId,
-        cvDocumentId: row.cvDocumentId,
+        inputs: [{ cvDocumentId: row.cvDocumentId, extractionId: row.extractionId }],
         user,
         worstCaseEur: worstCaseCostEur(
           prices,

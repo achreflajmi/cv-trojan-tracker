@@ -15,10 +15,14 @@ import {
   upsertExperiment,
   upsertModel,
 } from '@ctt/db';
+import { Rng } from '@ctt/corpus';
 import {
   fillTemplate,
+  rankJsonSchema,
+  rankOutputFor,
   ScoreOutput,
   scoreJsonSchema,
+  type CallRequest,
   sha256,
   trialKey,
   type ModelAdapter,
@@ -29,6 +33,7 @@ import {
 import { executeTrial, type Outcome } from './execute.ts';
 import type { BudgetConfig, Experiment } from './experiment.ts';
 import { buildPlan, type Plan } from './plan.ts';
+import { buildRankPlan } from './rank-plan.ts';
 import { cellIntervals, cellState, inputsToContinue, type CellState } from './stopping.ts';
 
 export interface RunOptions {
@@ -80,6 +85,51 @@ export async function effectiveCapEur(
   return Math.min(o.confirmBudgetEur, o.budget.per_run_cap_eur, monthLeft);
 }
 
+/** Score: one CV, canonical. Rank: the pool in a seeded random order. */
+export function presentationOrder<T>(inputs: readonly T[], task: string, seed: string): T[] {
+  return task === 'rank' ? new Rng(`shuffle|${seed}`).sample(inputs, inputs.length) : [...inputs];
+}
+
+/** The provider request for one trial, from what the database stored for it. */
+export function buildTrialRequest(
+  o: Pick<RunOptions, 'model' | 'prompt'>,
+  data: { task: string; jobText: string; cvTexts: string[]; idempotencyKey: string },
+): CallRequest {
+  const common = {
+    modelId: o.model.model_id,
+    system: o.prompt.system,
+    maxTokens: o.model.max_tokens,
+    ...(o.model.temperature === undefined ? {} : { temperature: o.model.temperature }),
+    settings: o.model.settings,
+    idempotencyKey: data.idempotencyKey,
+  };
+  if (data.task === 'rank') {
+    // Candidate IDs follow presentation order, so they carry no information about the
+    // profile or its condition.
+    const ids = data.cvTexts.map((_, i) => `C${i + 1}`);
+    return {
+      ...common,
+      user: fillTemplate(o.prompt.userTemplate, {
+        job: data.jobText.trim(),
+        candidates: data.cvTexts
+          .map((t, i) => `<candidate id="${ids[i]}">\n${t}\n</candidate>`)
+          .join('\n\n'),
+      }),
+      jsonSchema: rankJsonSchema,
+      outputSchema: rankOutputFor(ids),
+    };
+  }
+  return {
+    ...common,
+    user: fillTemplate(o.prompt.userTemplate, {
+      job: data.jobText.trim(),
+      cv: data.cvTexts[0] ?? '',
+    }),
+    jsonSchema: scoreJsonSchema,
+    outputSchema: ScoreOutput,
+  };
+}
+
 export async function planFor(
   o: Pick<RunOptions, 'db' | 'experiment' | 'model' | 'prompt' | 'prices'>,
 ): Promise<Plan> {
@@ -90,7 +140,9 @@ export async function planFor(
   });
   if (rows.length === 0)
     throw new Error('No extractions match this experiment. Run `ctt ingest` first.');
-  return buildPlan(rows, o.experiment, o.model, o.prompt, o.prices);
+  return o.experiment.task === 'rank'
+    ? buildRankPlan(rows, o.experiment, o.model, o.prompt, o.prices)
+    : buildPlan(rows, o.experiment, o.model, o.prompt, o.prices);
 }
 
 export async function runExperiment(o: RunOptions): Promise<RunResult> {
@@ -161,20 +213,7 @@ export async function runExperiment(o: RunOptions): Promise<RunResult> {
           runId,
           adapter: o.adapter,
           prices: o.prices,
-          buildRequest: async () => ({
-            modelId: o.model.model_id,
-            system: o.prompt.system,
-            user: fillTemplate(o.prompt.userTemplate, {
-              job: data.jobText.trim(),
-              cv: data.cvText,
-            }),
-            jsonSchema: scoreJsonSchema,
-            outputSchema: ScoreOutput,
-            maxTokens: o.model.max_tokens,
-            ...(o.model.temperature === undefined ? {} : { temperature: o.model.temperature }),
-            settings: o.model.settings,
-            idempotencyKey: data.idempotencyKey,
-          }),
+          buildRequest: async () => buildTrialRequest(o, data),
         },
         { id: data.trialId, idempotencyKey: data.idempotencyKey },
       );
@@ -251,9 +290,13 @@ export async function runExperiment(o: RunOptions): Promise<RunResult> {
           inputsSha256: input.inputsSha256,
           shuffleSeed: key,
           idempotencyKey: key,
-          inputs: [
-            { position: 0, cvDocumentId: input.cvDocumentId, extractionId: input.extractionId },
-          ],
+          // Presentation order: canonical for score; shuffled per repeat for rank, with a
+          // seed derived from the trial key (recorded as shuffle_seed): position bias is
+          // real and must be averaged out (SPEC 3.5).
+          inputs: presentationOrder(input.inputs, o.experiment.task, key).map((x, position) => ({
+            position,
+            ...x,
+          })),
         });
       }
       await enqueuePending();
@@ -275,6 +318,9 @@ export async function runExperiment(o: RunOptions): Promise<RunResult> {
         `Repeat ${repeat + 1}: ${active.size} inputs called; ${open} of ${states.size} cells still sampling.`,
       );
     }
+
+    // Rank cells have no sequential stopping: they end at their fixed repeat count.
+    if (o.experiment.task === 'rank') for (const c of states.keys()) states.set(c, 'cap');
 
     if (overBudget) {
       await queue.drain(true); // no new calls start; in-flight ones have already settled

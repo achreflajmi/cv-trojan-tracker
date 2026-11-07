@@ -1,7 +1,65 @@
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { createPool, exportCalls, exportVariants, type ExportVariant } from '@ctt/db';
+import {
+  createPool,
+  exportCalls,
+  exportRankInputs,
+  exportVariants,
+  type ExportRankInput,
+  type ExportVariant,
+} from '@ctt/db';
+import { parsePoolLabel } from '@ctt/engine';
 import { inputsSha256 } from '@ctt/shared';
+
+/**
+ * rank.csv: one row per completed rank call. target_rank is the target candidate's
+ * 1-based place in the model's ranking (empty if the answer was unparseable).
+ */
+export function rankRows(experiment: string, inputs: ExportRankInput[]): Record<string, unknown>[] {
+  const byTrial = new Map<number, ExportRankInput[]>();
+  for (const i of inputs) byTrial.set(i.trialId, [...(byTrial.get(i.trialId) ?? []), i]);
+  const rows: Record<string, unknown>[] = [];
+  for (const members of byTrial.values()) {
+    const first = members[0];
+    const pool = first ? parsePoolLabel(first.pool) : null;
+    if (!first || !pool) continue;
+    const ranking = (first.parsed as { ranking?: string[] } | null)?.ranking ?? null;
+    // Candidate IDs are C<position + 1> (presentation order).
+    const rankOf = (position: number): number | null => {
+      const i = ranking?.indexOf(`C${position + 1}`) ?? -1;
+      return i >= 0 ? i + 1 : null;
+    };
+    const target = members.find((m) => m.profile === pool.target);
+    const targetRank = target ? rankOf(target.position) : null;
+    const injectedRanks = members
+      .filter((m) => m.condition !== 'CLEAN')
+      .map((m) => rankOf(m.position))
+      .filter((r): r is number => r !== null);
+    rows.push({
+      experiment,
+      run_id: first.runId,
+      provider: first.provider,
+      model: first.modelId,
+      job: first.job,
+      extractor: pool.extractor,
+      pool: `${first.job}|p${pool.pool}`,
+      k: pool.k,
+      variant: pool.variant,
+      target: pool.target,
+      repeat: first.repeatIndex,
+      pool_size: members.length,
+      parsed: ranking ? 1 : 0,
+      target_rank: targetRank ?? '',
+      target_top3: targetRank === null ? '' : targetRank <= 3 ? 1 : 0,
+      target_position: target ? target.position + 1 : '',
+      injected_mean_rank: injectedRanks.length
+        ? injectedRanks.reduce((a, b) => a + b, 0) / injectedRanks.length
+        : '',
+      cost_eur: first.costEur,
+    });
+  }
+  return rows;
+}
 
 /** RFC 4180 CSV: quote every field that needs it. */
 function csv(rows: Record<string, unknown>[]): string {
@@ -106,6 +164,8 @@ export async function exportExperiment(experiment: string, outDir: string): Prom
 
     mkdirSync(outDir, { recursive: true });
     writeFileSync(join(outDir, 'calls.csv'), csv(rows));
+    const rank = rankRows(experiment, await exportRankInputs(db, experiment));
+    if (rank.length > 0) writeFileSync(join(outDir, 'rank.csv'), csv(rank));
     writeFileSync(join(outDir, 'survival.csv'), csv(survival));
     writeFileSync(join(outDir, 'meta.json'), JSON.stringify(meta, null, 2) + '\n');
     console.log(
