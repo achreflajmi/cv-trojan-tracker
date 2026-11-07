@@ -1,0 +1,17 @@
+# A small, cheap experiment to exercise the engine end to end on real models.
+# The pre-registered full experiment is defined in prereg.yaml (Stage 9).
+name: pilot
+prompt: battery/prompts/screener.v1.md
+prompt_version: screener.v1
+task: score
+jobs: [junior-backend-engineer]
+fit_bands: [medium, weak] # SPEC 3.6: primary analysis bands
+conditions: [CLEAN, DATA, INSTR, VIS_DATA, HIDDEN_NEUTRAL, VIS_INSTR]
+hiding_methods: [WHITE, OFFPAGE]
+extractors: [pdfjs]
+include_aa: true # a second, independent CLEAN arm for the A/A sanity check
+stopping:
+  min_repeats: 3
+  max_repeats: 5
+  # Stop a cell when the 95% t-interval half-width of its score lift (points) is at most this.
+  target_half_width: 4

@@ -1,0 +1,6 @@
+# Budget caps in EUR (SPEC 4.5). The effective cap of a run is the smallest of:
+#   --confirm-budget, per_run_cap_eur, and monthly_cap_eur minus what was already
+#   committed this calendar month (UTC) across all runs.
+# Set by the owner; lowering them is always safe.
+per_run_cap_eur: 5
+monthly_cap_eur: 10

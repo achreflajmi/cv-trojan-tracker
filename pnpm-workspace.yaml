@@ -3,8 +3,11 @@ packages:
   - apps/*
 minimumReleaseAgeExclude:
   - '@anthropic-ai/sdk@1.5.0'
+  - bullmq@6.7.1
 # Install scripts of these SDKs are not needed (no-op/type-check/version notice); keep them off.
 allowBuilds:
   '@google/genai': false
   '@openrouter/sdk': false
   protobufjs: false
+  # Optional native speed-up for BullMQ's message encoding; msgpackr falls back to plain JS.
+  msgpackr-extract: false

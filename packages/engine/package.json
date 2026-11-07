@@ -7,9 +7,14 @@
     ".": "./src/index.ts"
   },
   "dependencies": {
+    "@ctt/corpus": "workspace:*",
     "@ctt/db": "workspace:*",
+    "@ctt/extract": "workspace:*",
     "@ctt/providers": "workspace:*",
     "@ctt/shared": "workspace:*",
+    "bullmq": "^6.7.1",
+    "ioredis": "^6.0.0",
+    "yaml": "^2.9.1",
     "zod": "^4.6.7"
   },
   "devDependencies": {
