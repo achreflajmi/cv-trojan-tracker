@@ -1,0 +1,14 @@
+{
+  "name": "@ctt/corpus",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "dependencies": {
+    "@ctt/shared": "workspace:*",
+    "pdf-lib": "^1.17.1",
+    "zod": "^4.6.7"
+  }
+}
