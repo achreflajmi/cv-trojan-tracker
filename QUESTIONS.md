@@ -61,3 +61,21 @@ Prediction prompts are kept too. Answering them after the fact is less useful, s
 ### Predictions
 
 - [ ] **2.P1** Before seeing the table: which hiding methods survive pdf.js, and which survive poppler? (Recorded: see PROGRESS.md finding F-1.)
+
+---
+
+## Stage 3 — Database, idempotent trials, resume after kill
+
+### Interview questions
+
+- [ ] **3.1** A `UNIQUE` constraint on the trial key does not by itself stop paying twice. Why not, and what does the claim → call → settle protocol add?
+- [ ] **3.2** Why are there two partial unique indexes on `call` (completed, and claimed)? What goes wrong with only the first one when two workers run?
+- [ ] **3.3** Explain the deadlock the two-worker test found, step by step, and why "lock the run row first" fixes it. What is the cost of that fix?
+- [ ] **3.4** Why is the budget check inside the same transaction as the claim, with `SELECT ... FOR UPDATE`? What would happen with a check in application code before the transaction?
+- [ ] **3.5** After a SIGKILL during an API call, the reservation stays in the ledger as "orphaned". Why is that the right default, and when could it overstate spend?
+- [ ] **3.6** The migration runner stores a checksum per file. What does that protect against, and why normalise line endings before hashing?
+- [ ] **3.7** Why does the kill test use a real child process and SIGKILL instead of throwing an exception inside the same process?
+
+### Predictions
+
+- [ ] **3.P1** Before the kill test: after SIGKILL and restart, how many `call` rows will have status `failed`, and why is the answer "0 or 1"?

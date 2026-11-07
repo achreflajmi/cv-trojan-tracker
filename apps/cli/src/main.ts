@@ -1,5 +1,6 @@
 import { parseArgs } from 'node:util';
 import { z } from 'zod';
+import { createPool, migrate } from '@ctt/db';
 import { extract, generate, survival } from './corpus.ts';
 import { runStage1 } from './stage1.ts';
 
@@ -9,6 +10,7 @@ Commands:
   generate   Build profiles and PDFs for all jobs, conditions and hiding methods
   extract    Run both extractors on every PDF and record hidden-text survival
   survival   Print the method x extractor survival table
+  migrate    Apply pending database migrations (DATABASE_URL)
   stage1 --model <key> [--confirm-budget <EUR>] [--out <dir>]
              Render CLEAN and DATA/WHITE CVs, extract with pdf.js, score each once`;
 
@@ -32,6 +34,18 @@ async function main(argv: string[]): Promise<void> {
       return extract();
     case 'survival':
       return survival();
+    case 'migrate': {
+      const pool = createPool();
+      const client = await pool.connect();
+      try {
+        const ran = await migrate(client);
+        console.log(ran.length ? `Applied: ${ran.join(', ')}` : 'Database is up to date');
+      } finally {
+        client.release();
+        await pool.end();
+      }
+      return;
+    }
     case 'stage1': {
       if (!values.model) throw new Error('--model is required');
       const budget = values['confirm-budget'];

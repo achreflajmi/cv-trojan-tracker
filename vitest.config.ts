@@ -5,5 +5,6 @@ export default defineConfig({
     include: ['packages/*/src/**/*.test.ts', 'apps/*/src/**/*.test.ts'],
     // Live provider tests cost money; they live in *.live.test.ts and run only via test:live.
     exclude: ['**/*.live.test.ts', '**/node_modules/**'],
+    setupFiles: ['./vitest.setup.ts'],
   },
 });

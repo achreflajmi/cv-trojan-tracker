@@ -12,10 +12,10 @@ Last updated: 2026-11-05
 
 | Stage | Name                                           | Status                                             |
 | ----- | ---------------------------------------------- | -------------------------------------------------- |
-| 0     | Repo scaffold                                  | [~] Local done; CI not yet run on GitHub           |
+| 0     | Repo scaffold                                  | [x] Done 2026-11-05 (CI green, PR #1)              |
 | 1     | First end-to-end call (1 job, 1 profile)       | [x] Done 2026-11-05 (CLEAN 35, DATA/WHITE 45; n=1) |
 | 2     | Full corpus, hiding methods, extractors        | [x] Done 2026-11-05 (owner visual check open)      |
-| 3     | Database, idempotent trials, resume            | [ ] Not started                                    |
+| 3     | Database, idempotent trials, resume            | [x] Done 2026-11-05                                |
 | 4     | All providers, zod validation, rate limits     | [ ] Not started                                    |
 | 5     | Queue, budget guard, plan/run/status, stopping | [ ] Not started                                    |
 | 6     | Python analysis + export                       | [ ] Not started                                    |
@@ -66,8 +66,8 @@ Rules that apply to every stage (from `CLAUDE.md`): explain before code; smalles
 - [x] `pnpm test` — 1 test passed
 - [x] `docker compose up -d --wait` — postgres and redis healthy; `select version()` → PostgreSQL 16.15; `redis-cli ping` → PONG
 - [x] Branch `stage-0-scaffold` created and committed (2026-11-05)
-- [ ] Branch pushed and PR opened — blocked: github.com not resolvable from this machine; `gh` token expired (`gh auth refresh -h github.com`)
-- [ ] CI green on GitHub
+- [x] Branches pushed after the owner added the `workflow` scope; one stacked PR per stage: #1 (Stage 0 → main), #2 (Stage 1), #3 (Stage 2), #4 (Stage 3)
+- [x] CI green on GitHub for all four PRs (database and kill/resume tests ran on Linux, none skipped)
 
 ### Manual tasks
 
@@ -161,18 +161,23 @@ Moved to `QUESTIONS.md`.
 
 ### Build tasks
 
-- [ ] `packages/db`: numbered plain-SQL migrations (never edited after merge) + a small migration runner
-- [ ] Tables (SPEC 4.3): `model`, `job`, `profile`, `cv_document`, `extraction`, `experiment`, `run`, `trial`, `trial_input`, `call`, `budget_ledger`
-- [ ] `trial.idempotency_key UNIQUE`; key includes `inputs_sha256` (#15)
-- [ ] `call.status` claimed → completed/failed; partial unique index (one completed call per trial); orphaned claims kept in the ledger (#16)
-- [ ] Typed queries
-- [ ] Test: kill mid-run → restart → zero duplicate `call` rows
-- [ ] Test: idempotency key stability (same inputs → same key; different CV → different key)
+- [x] `packages/db`: numbered plain-SQL migrations + runner that stores each file's sha256 and refuses edited migrations; `pnpm ctt migrate`
+- [x] Tables (SPEC 4.3): `model`, `job`, `profile`, `cv_document`, `extraction`, `experiment`, `run`, `trial`, `trial_input`, `call`, `budget_ledger` (`001_initial.sql`, with CHECK constraints)
+- [x] `trial.idempotency_key UNIQUE`; key includes `inputs_sha256` (#15)
+- [x] `call.status` claimed → completed/failed; partial unique indexes: one completed call per trial AND one in-flight claim per trial; orphaned claims kept in the ledger (#16)
+- [x] Budget check + reservation inside the claim transaction with the run row locked (#10, done early: needed for safe concurrency)
+- [x] Typed queries (`pg`, parameterised SQL); lock-ordering rule: ledger writers lock the run row first (fixed a real deadlock found by the two-worker test)
+- [x] `packages/engine`: claim → call → settle executor; `runPending` with explicit orphan recovery
+- [x] Test: real child process killed with SIGKILL mid-run → restart → every trial has exactly one completed call, zero duplicates, orphaned claims accounted (passes 5/5 runs)
+- [x] Test: two concurrent workers on one run → API called exactly once per trial
+- [x] Test: budget cap → stops starting calls, committed spend never exceeds the cap
+- [x] Test: idempotency key stability (Stage 1 tests) and DB-level duplicate rejection, even with raw SQL
+- [x] CI: Postgres 16 service so the database tests run in CI too
 
 ### Manual tasks
 
-- [ ] **(OWNER)** `.env` has `DATABASE_URL`; `docker compose up -d` running
-- [ ] **(OWNER)** Predict what happens on restart before running the kill test
+- [x] **(OWNER)** `.env` has `DATABASE_URL`; `docker compose up -d` running (verified: `pnpm ctt migrate` applied `001_initial.sql`)
+- [ ] **(OWNER)** Predict what happens on restart (in `QUESTIONS.md`, 3.P1)
 - [ ] **(OWNER)** Answer the Stage 3 questions in `QUESTIONS.md` (end of project)
 
 ### Decisions needed
@@ -367,6 +372,11 @@ Decisions already made, with the reason. Newest at the bottom.
 | D-023 | 2026-11-05 | HIDDEN_NEUTRAL text: neutral sentences cut to at most the DATA text length (within 20 chars)                                                              | Length-matched control (#7)                                                                                                                   | Claude |
 | D-024 | 2026-11-05 | Measured extractor behaviour is locked in tests (`EXPECTED_SURVIVAL`)                                                                                     | An extractor upgrade that changes what models see must fail CI and be reviewed                                                                | Claude |
 | D-025 | 2026-11-05 | Generated profiles and PDFs are not committed; they are reproducible from seeds (determinism tested)                                                      | Avoids 2,592 binary files in git                                                                                                              | Claude |
+| D-026 | 2026-11-05 | Database driver `pg` with hand-written parameterised SQL; own 40-line migration runner with checksums                                                     | Plain SQL migrations (CLAUDE.md); constraints stay visible; an ORM would hide them                                                            | Claude |
+| D-027 | 2026-11-05 | Second partial unique index: at most one `claimed` call per trial                                                                                         | Stops two concurrent workers from calling the API for the same trial                                                                          | Claude |
+| D-028 | 2026-11-05 | Every ledger-writing transaction locks the run row first (`lockRun`)                                                                                      | Fixes a deadlock between claim and completion found by the two-worker test                                                                    | Claude |
+| D-029 | 2026-11-05 | HTTP error responses release the reservation (not billed); errors without a status (dropped connection) keep it as possibly paid                          | Conservative: an unknown outcome is counted as spent                                                                                          | Claude |
+| D-030 | 2026-11-05 | Orphan recovery is an explicit step, only when no worker for the run is alive                                                                             | Recovering while another worker is mid-call would mark its live claim as orphaned                                                             | Claude |
 | D-012 | 2026-11-05 | Interview questions and predictions collected in `QUESTIONS.md`; build continues without waiting for answers                                              | Owner request; `CLAUDE.md` rule 5 updated                                                                                                     | Owner  |
 | D-011 | 2026-11-05 | Idempotency key uses extracted-text hashes (not extraction IDs)                                                                                           | Same text → same key, which implements deduplication (#4) for free                                                                            | Claude |
 
