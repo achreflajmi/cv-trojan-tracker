@@ -1,0 +1,57 @@
+# Shared vocabulary for the seeded profile generator. All organisations and places
+# are fictional. Changing this file changes every generated profile, so treat it
+# like a prompt: bump `version` and regenerate.
+version: 1
+
+orgs:
+  - Halden Logistics
+  - Brightwater Analytics
+  - Northgate Retail Group
+  - Corvel Systems
+  - Larkspur Health Partners
+  - Ostrava Media House
+  - Meridian Freight
+  - Tallis Energy
+  - Quillon Software
+  - Saltmarsh Foods
+  - Verdance Insurance
+  - Kestrel Hospitality
+
+institutions:
+  - Rhone Valley Institute of Technology
+  - Northbrook University
+  - Calder College
+  - University of Westmere
+  - Avonlea Polytechnic
+  - Harrowgate University
+
+cities:
+  - Lyon, France
+  - Porto, Portugal
+  - Leeds, United Kingdom
+  - Ghent, Belgium
+  - Tampere, Finland
+  - Graz, Austria
+  - Utrecht, Netherlands
+  - Aarhus, Denmark
+
+skill_bullets:
+  - Used {skill} daily on team projects.
+  - Improved an existing process using {skill}.
+  - Helped two new colleagues get started with {skill}.
+  - Delivered a project that relied on {skill}.
+
+generic_bullets:
+  - Handled day-to-day requests from colleagues and customers.
+  - Kept records up to date and reported progress to a manager.
+  - Worked in a small team with shared weekly goals.
+  - Took part in planning meetings and followed up on actions.
+
+# Neutral text used for the HIDDEN_NEUTRAL condition: unrelated to any job.
+neutral_sentences:
+  - The weather in spring is often mild with occasional rain.
+  - Rivers carry sediment from the mountains towards the sea.
+  - Many cities have public libraries open on weekends.
+  - Bread is made from flour, water, salt and yeast.
+  - Some birds migrate thousands of kilometres each year.
+  - A calendar year has twelve months and four seasons.

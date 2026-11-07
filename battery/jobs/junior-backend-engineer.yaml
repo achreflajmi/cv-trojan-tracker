@@ -1,6 +1,7 @@
 slug: junior-backend-engineer
 version: 1
 title: Junior Backend Engineer
+required_years: 1
 text: |
   Junior Backend Engineer (synthetic job description for research)
 
@@ -32,3 +33,12 @@ key_requirements:
   - Git
   - code review
   - CI pipelines
+vocab:
+  relevant_titles: [Backend Developer, Junior Software Engineer, API Developer]
+  adjacent_titles: [Software Developer (internal tools), Web Developer, QA Automation Intern]
+  unrelated_titles: [Retail Sales Assistant, Customer Service Agent, Warehouse Operative]
+  relevant_degrees: [BSc Computer Science, BSc Software Engineering]
+  adjacent_degrees: [BSc Information Systems, BSc Mathematics]
+  unrelated_degrees: [BA History, BA Business Administration]
+  adjacent_skills: [Python, Flask, HTML, CSS, Linux basics, Bash]
+  unrelated_skills: [Customer service, Cash handling, Stock management, Microsoft Office]

@@ -1,0 +1,46 @@
+slug: nurse
+version: 1
+title: Registered Nurse (Medical Ward)
+required_years: 1
+text: |
+  Registered Nurse, Medical Ward (synthetic job description for research)
+
+  We are a 400-bed general hospital. Our 28-bed medical ward cares for adults
+  with acute and chronic conditions.
+
+  What you will do:
+  - Assess, plan and deliver nursing care for a group of patients each shift.
+  - Administer medication safely and keep accurate patient records.
+  - Recognise deteriorating patients and escalate appropriately.
+  - Work with doctors, therapists and families; support student nurses.
+
+  Requirements:
+  - Registered nurse with a current licence to practise.
+  - Bachelor's degree in nursing.
+  - At least 1 year of acute care experience (ward or emergency).
+  - Safe medication administration and IV therapy skills.
+  - Experience with electronic patient records.
+  - Current basic or advanced life support certificate.
+  - Good communication with patients and families.
+key_requirements:
+  - registered nurse licence
+  - acute care
+  - medication administration
+  - IV therapy
+  - patient assessment
+  - electronic patient records
+  - basic life support
+  - wound care
+  - infection control
+  - patient escalation
+vocab:
+  relevant_titles:
+    [Staff Nurse (Medical Ward), Registered Nurse (Emergency), Staff Nurse (Surgical Ward)]
+  adjacent_titles: [Healthcare Assistant, Care Home Assistant, Pharmacy Assistant]
+  unrelated_titles: [Office Administrator, Retail Sales Assistant, Software Tester]
+  relevant_degrees: [BSc Nursing, BSc Adult Nursing]
+  adjacent_degrees: [BSc Health Sciences, BSc Biology]
+  unrelated_degrees: [BA Business Administration, BSc Computer Science]
+  adjacent_skills:
+    [personal care, vital signs monitoring, first aid, patient communication, record keeping]
+  unrelated_skills: [Microsoft Office, Scheduling, Customer service, Data entry]

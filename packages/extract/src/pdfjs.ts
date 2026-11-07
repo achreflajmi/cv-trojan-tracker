@@ -13,8 +13,9 @@ const standardFontDataUrl = new URL(
 
 /** Extract text the way a typical screening pipeline would: all text items, in order. */
 export async function extractWithPdfjs(pdf: Uint8Array): Promise<string> {
-  // pdf.js takes ownership of the buffer it is given, so pass a copy.
-  const task = getDocument({ data: pdf.slice(), standardFontDataUrl, verbosity: 0 });
+  // pdf.js takes ownership of the buffer it is given, so pass a copy. It must be a
+  // plain Uint8Array: pdf.js rejects Node's Buffer subclass (and Buffer.slice is a view).
+  const task = getDocument({ data: new Uint8Array(pdf), standardFontDataUrl, verbosity: 0 });
   const doc = await task.promise;
   try {
     const pages: string[] = [];
