@@ -1,0 +1,34 @@
+slug: junior-backend-engineer
+version: 1
+title: Junior Backend Engineer
+text: |
+  Junior Backend Engineer (synthetic job description for research)
+
+  We are a mid-sized software company building a B2B invoicing platform. We are
+  looking for a junior backend engineer to join a team of six.
+
+  What you will do:
+  - Build and maintain REST APIs in Node.js and TypeScript.
+  - Write SQL queries and schema migrations for PostgreSQL.
+  - Write automated tests and take part in code review.
+  - Work with Docker-based local environments and a CI pipeline.
+
+  Requirements:
+  - Degree in computer science or equivalent practical experience.
+  - At least 1 year of professional or substantial project experience in backend development.
+  - Good knowledge of TypeScript or JavaScript on the server (Node.js).
+  - Working knowledge of SQL and relational databases, ideally PostgreSQL.
+  - Experience writing automated tests.
+  - Familiarity with Git, Docker and REST API design.
+  - Good written English.
+key_requirements:
+  - Node.js
+  - TypeScript
+  - PostgreSQL
+  - SQL
+  - REST API design
+  - automated testing
+  - Docker
+  - Git
+  - code review
+  - CI pipelines

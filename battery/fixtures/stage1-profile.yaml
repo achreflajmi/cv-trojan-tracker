@@ -1,0 +1,37 @@
+# Hand-written synthetic profile for Stage 1 (the seeded generator arrives in Stage 2).
+# Deliberately a medium fit for junior-backend-engineer: some backend experience, but
+# no TypeScript, PostgreSQL, Docker or testing on the CV. That leaves room for the
+# hidden keywords to make a difference.
+id: stage1-medium-01
+fit_band: medium
+name: Lina Marovic
+email: lina.marovic@example.com
+location: Lyon, France
+summary: >-
+  Computer science graduate with one year of experience building internal tools in
+  Python. Interested in moving into backend product development.
+experience:
+  - title: Software Developer (internal tools)
+    org: Halden Logistics
+    start: '2025'
+    end: present
+    bullets:
+      - Built Python scripts that import shipment data from CSV files into reports.
+      - Maintained a small Flask web app used by the warehouse team.
+      - Fixed bugs reported by users and documented the fixes.
+  - title: IT Support Intern
+    org: Arvelle Municipal Services
+    start: '2024'
+    end: '2024'
+    bullets:
+      - Set up laptops and user accounts for new staff.
+education:
+  - degree: BSc Computer Science
+    institution: Rhone Valley Institute of Technology
+    year: 2025
+skills:
+  - Python
+  - Flask
+  - HTML
+  - CSV processing
+  - Linux basics

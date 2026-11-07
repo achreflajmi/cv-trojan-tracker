@@ -9,9 +9,13 @@
   "scripts": {
     "test": "vitest run",
     "test:watch": "vitest",
-    "lint": "eslint . && prettier --check .",
+    "lint": "node scripts/check-secrets.mjs && eslint . && prettier --check .",
     "format": "prettier --write .",
-    "typecheck": "tsc -b"
+    "typecheck": "tsc -p tsconfig.json",
+    "ctt": "node --env-file-if-exists=.env apps/cli/src/main.ts",
+    "test:live": "vitest run --config vitest.live.config.ts",
+    "check:secrets": "node scripts/check-secrets.mjs",
+    "prepare": "git config core.hooksPath .githooks"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

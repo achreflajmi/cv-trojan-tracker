@@ -1,0 +1,47 @@
+# Curated synthetic names (SPEC hard rule 2). First and last names are combined by
+# the seeded generator, so no entry describes a real person. ASCII only, because the
+# CV renderer uses the standard PDF fonts (WinAnsi encoding).
+# Gender and origin signals are balanced on purpose; name bias is a v2 battery, and
+# conditions are always compared on the same profile, so the name is held constant.
+first_names:
+  - Lina
+  - Omar
+  - Sofia
+  - Daniel
+  - Amara
+  - Tomas
+  - Yuki
+  - Mateo
+  - Nadia
+  - Lukas
+  - Priya
+  - Samuel
+  - Elena
+  - Kofi
+  - Ines
+  - Jonas
+  - Mei
+  - Rafael
+  - Hana
+  - Adrian
+last_names:
+  - Marovic
+  - Haddad
+  - Lindqvist
+  - Okafor
+  - Moreau
+  - Novak
+  - Tanaka
+  - Ferreira
+  - Kowalski
+  - Brennan
+  - Mensah
+  - Ivanova
+  - Castillo
+  - Petersen
+  - Rahman
+  - Dubois
+  - Sato
+  - Varga
+  - Achterberg
+  - Silva
