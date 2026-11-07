@@ -7,15 +7,19 @@ export function toEur(value: string | number | null): number {
 }
 
 /**
- * A pool for DATABASE_URL. `schema` puts every table in a separate Postgres schema
- * (used by tests so each run starts from an empty database).
+ * A pool for DATABASE_URL (local, CI). Without it, the standard libpq variables
+ * (PGHOST, PGUSER, PGPASSWORD, PGDATABASE) are used, as on AWS where ECS injects them
+ * from the RDS-managed secret; that connection always uses verified TLS (the RDS CA
+ * bundle is in the image via NODE_EXTRA_CA_CERTS).
+ * `schema` puts every table in a separate Postgres schema (tests).
  */
 export function createPool(url = process.env.DATABASE_URL, schema?: string): pg.Pool {
-  if (!url) throw new Error('DATABASE_URL is not set (see .env.example)');
-  return new pg.Pool({
-    connectionString: url,
-    ...(schema ? { options: `-c search_path=${schema}` } : {}),
-  });
+  const searchPath = schema ? { options: `-c search_path=${schema}` } : {};
+  if (url) return new pg.Pool({ connectionString: url, ...searchPath });
+  if (process.env.PGHOST) return new pg.Pool({ ssl: { rejectUnauthorized: true }, ...searchPath });
+  throw new Error(
+    'DATABASE_URL (or PGHOST/PGUSER/PGPASSWORD/PGDATABASE) is not set (see .env.example)',
+  );
 }
 
 export async function withTransaction<T>(

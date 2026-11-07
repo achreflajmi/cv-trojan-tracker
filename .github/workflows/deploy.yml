@@ -1,0 +1,54 @@
+# Builds the runner image and pushes it to ECR, authenticating with GitHub OIDC
+# (no AWS keys stored in GitHub). Field by field:
+name: Deploy runner image
+
+on:
+  push:
+    branches: [main]
+    paths: ['packages/**', 'apps/cli/**', 'config/**', 'battery/**', 'Dockerfile', 'pnpm-lock.yaml']
+  workflow_dispatch: # manual "Run workflow" button
+
+# id-token: write lets the job request a short-lived OIDC token from GitHub, which AWS
+# exchanges for temporary credentials of the deploy role. contents: read to check out.
+permissions:
+  id-token: write
+  contents: read
+
+# Never two deploys at once; a newer push does not cancel a running deploy.
+concurrency:
+  group: deploy
+  cancel-in-progress: false
+
+jobs:
+  push-image:
+    # Skipped until the owner has applied Terraform and set the repository variables
+    # AWS_DEPLOY_ROLE_ARN (terraform output github_deploy_role_arn) and AWS_REGION.
+    if: vars.AWS_DEPLOY_ROLE_ARN != ''
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v7
+
+      # Exchange the OIDC token for temporary credentials (1 h) of the deploy role. The
+      # role's trust policy only accepts this repository's main branch.
+      - uses: aws-actions/configure-aws-credentials@v6
+        with:
+          role-to-assume: ${{ vars.AWS_DEPLOY_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION }}
+
+      - id: ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      # The task runs on ARM64 (Graviton); QEMU lets the x86 runner build an arm64 image.
+      - uses: docker/setup-qemu-action@v4
+      - uses: docker/setup-buildx-action@v4
+
+      # Tag = commit SHA. ECR tags are immutable, so a tag always means the same image;
+      # the owner points Terraform's image_tag at the SHA to roll out.
+      - uses: docker/build-push-action@v7
+        with:
+          context: .
+          platforms: linux/arm64
+          push: true
+          tags: ${{ steps.ecr.outputs.registry }}/ctt-runner:${{ github.sha }}
+          provenance: false

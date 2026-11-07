@@ -33,3 +33,8 @@ apps/web/generated/
 apps/web/public/data/
 apps/web/next-env.d.ts
 *.tsbuildinfo
+# Terraform local state and plugins (the lock file IS committed)
+infra/.terraform/
+*.tfstate
+*.tfstate.*
+*.tfplan

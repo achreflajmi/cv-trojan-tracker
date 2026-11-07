@@ -159,3 +159,21 @@ Prediction prompts are kept too. Answering them after the fact is less useful, s
 - [ ] **7.3** How does the chart avoid relying on color alone or on hover alone?
 - [ ] **7.4** Why does the headline show the noise floor and the date next to the number?
 - [ ] **7.5** Tailwind 4.3.5 was released the same day. Why pin 4.3.3 instead of adding a release-age exception?
+
+---
+
+## Stage 8 — AWS infrastructure
+
+### Interview questions
+
+- [ ] **8.1** Explain the difference between the ECS execution role and the task role. What would go wrong if you merged them?
+- [ ] **8.2** The GitHub OIDC trust policy pins `sub` to `repo:<owner>/<repo>:ref:refs/heads/main`. What attack does that stop, and what if you only checked `aud`?
+- [ ] **8.3** Why is `ecr:GetAuthorizationToken` the only statement with `Resource: "*"`, and why is that still "least privilege"?
+- [ ] **8.4** No NAT gateway: how does the runner reach the APIs, and why is it still not reachable from the internet?
+- [ ] **8.5** Why is the RDS password managed by RDS instead of a `random_password` resource in Terraform?
+- [ ] **8.6** The Docker smoke test found two bugs that unit tests never could. What were they, and why did development hide them?
+- [ ] **8.7** The schedule is created disabled and never retries. Which hard rule does that protect?
+
+### Predictions
+
+- [ ] **8.P1** Before `terraform plan`: how many resources will it create? (Count the `resource` blocks, including `count`/`for_each`.)

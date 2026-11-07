@@ -75,6 +75,21 @@ jobs:
       - run: uv sync --locked
       - run: uv run pytest -q
 
+  # Terraform must be formatted and valid, and no IAM policy may grant a wildcard action.
+  # Only fmt/validate here: `plan` needs AWS credentials and `apply` is the owner's.
+  infra:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+      - uses: hashicorp/setup-terraform@v4
+        with:
+          terraform_version: 1.17.1
+      - run: node scripts/check-iam.mjs
+      - run: terraform -chdir=infra fmt -check -recursive
+      - run: terraform -chdir=infra init -backend=false -input=false
+      - run: terraform -chdir=infra validate
+
   # The results page must build statically (SPEC Stage 7). In CI there are no real
   # results, so it builds from the clearly marked sample fixture.
   web:

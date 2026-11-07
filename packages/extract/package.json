@@ -7,11 +7,11 @@
     ".": "./src/index.ts"
   },
   "dependencies": {
+    "@ctt/shared": "workspace:*",
     "pdfjs-dist": "^6.5.438",
     "zod": "^4.6.7"
   },
   "devDependencies": {
-    "@ctt/corpus": "workspace:*",
-    "@ctt/shared": "workspace:*"
+    "@ctt/corpus": "workspace:*"
   }
 }
