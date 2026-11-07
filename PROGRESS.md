@@ -21,7 +21,7 @@ Last updated: 2026-11-05
 | 6     | Python analysis + export                       | [x] Done 2026-11-06                                |
 | 7     | Results web page                               | [x] Done 2026-11-06 (sample data until Stage 9)    |
 | 8     | AWS infrastructure (Terraform) + OIDC CI       | [~] Code + validate done; plan/apply = owner       |
-| 9     | First full run, publish, DOI, README           | [ ] Not started                                    |
+| 9     | First full run, publish, DOI, README           | [~] Prepared; run needs owner budget + decisions   |
 
 Rules that apply to every stage (from `CLAUDE.md`): explain before code; smallest thing that runs first; predict before running; stop at the end of the stage with a summary, verification steps and 3–5 interview questions; wait for the owner's answers before starting the next stage. No paid API call without a EUR budget confirmed in that session.
 
@@ -343,16 +343,18 @@ Moved to `QUESTIONS.md`.
 
 ### Build tasks
 
-- [ ] `prereg.yaml` complete: metrics, precision targets, repeat caps, FDR level, effect definition, model list with exact IDs, pool construction
-- [ ] First full run per `prereg.yaml`
-- [ ] Export + analysis + figures
-- [ ] README first screen (SPEC section 9)
-- [ ] Results page deployed
+- [~] `prereg.yaml` drafted: metrics, precision targets, repeat caps, FDR and BH families, effect definition, models with exact IDs, pool construction, cost estimates; **open: total budget, models in scope, max_tokens review** (owner)
+- [x] `config/experiments/full.yaml` (score, 6,264–20,880 calls per model) and `full-rank.yaml` (9 pools per job per F-2, 4,968 calls per model); costed with `ctt plan` for all 7 models
+- [x] `ctt run` records the prereg commit (git or `PREREG_COMMIT`); `ctt export` carries it into `meta.json` for the results page
+- [x] README first screen (SPEC 9), honest "not measured yet" headline, verified citations
+- [ ] First full run per `prereg.yaml` (needs budget)
+- [ ] Export + analysis + figures on the real data
+- [ ] Results page deployed (GitHub Pages) and dataset DOI (Zenodo)
 
 ### Manual tasks
 
 - [ ] **(OWNER)** Review and commit `prereg.yaml` **before** the run (frozen after the first full run)
-- [ ] **(OWNER)** Verify the arXiv IDs and citations in SPEC section 2
+- [~] Citations: arXiv 2605.28999 and 2606.27287 verified 2026-11-06 (title, authors, findings; README quotes the abstracts: "about 1% of ~200K", ">90% without explicit instructions"); **Indeed RAPIDS still to verify (OWNER)**
 - [ ] **(OWNER)** Confirm the EUR budget for the full run
 - [ ] **(OWNER)** Publish the dataset (e.g. Zenodo) and get the DOI
 - [ ] **(OWNER)** Final review of the README and results page
@@ -418,6 +420,9 @@ Decisions already made, with the reason. Newest at the bottom.
 | D-053 | 2026-11-06 | RDS password generated and stored by RDS in Secrets Manager; injected as PG* env vars; TLS verified with the RDS CA bundle                                                                                                                                                         | Password never in code, Terraform state or plan output                                                                                                  | Claude |
 | D-054 | 2026-11-06 | Schedule created disabled, no automatic retries; `confirm_budget_eur` variable (validated ≤ 50) is the owner's budget confirmation for scheduled runs                                                                                                                              | A paid run must never start without an explicit owner action                                                                                            | Claude |
 | D-055 | 2026-11-06 | Results page to be hosted on GitHub Pages, not S3 + CloudFront                                                                                                                                                                                                                     | Free and enough for a static site                                                                                                                       | Claude |
+| D-056 | 2026-11-06 | Full score experiment: all 4 jobs, all bands, all conditions and methods, both extractors, min 3 / max 10 repeats, target half-width 1.5 points                                                                                                                                    | Half the minimum effect size, so an effect at the threshold is distinguishable from 0                                                                   | Claude |
+| D-057 | 2026-11-06 | Full rank experiment: 9 pools per job, compositions 0/1/5, 3 repeats, methods WHITE/OFFPAGE/OCG_OFF only                                                                                                                                                                           | F-2 (more pools); TINY/RENDER3 give the same text as WHITE (F-1), so they add cost without information                                                  | Claude |
+| D-058 | 2026-11-06 | README cites the abstracts' own wording, not the spec's paraphrase; RAPIDS marked unverified                                                                                                                                                                                       | Two numbers in SPEC 2 differ from the abstract (197k vs ~200K; "90–96% keywords" vs ">90% without explicit instructions")                               | Claude |
 | D-012 | 2026-11-05 | Interview questions and predictions collected in `QUESTIONS.md`; build continues without waiting for answers                                                                                                                                                                       | Owner request; `CLAUDE.md` rule 5 updated                                                                                                               | Owner  |
 | D-011 | 2026-11-05 | Idempotency key uses extracted-text hashes (not extraction IDs)                                                                                                                                                                                                                    | Same text → same key, which implements deduplication (#4) for free                                                                                      | Claude |
 

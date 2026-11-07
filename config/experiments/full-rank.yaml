@@ -1,0 +1,24 @@
+# The pre-registered rank experiment (SPEC 3.5, prereg.yaml). Fixed repeats (D-046).
+# 9 pools per job (36 in total) following finding F-2: 24 pools made the bootstrap
+# mildly anti-conservative.
+name: full-rank
+prompt: battery/prompts/ranker.v1.md
+prompt_version: ranker.v1
+task: rank
+rank:
+  pools_per_job: 9
+  pool_size: 10
+  compositions: [0, 1, 5]
+jobs: [data-analyst, junior-backend-engineer, marketing-manager, nurse]
+fit_bands: [strong, medium, weak]
+conditions: [CLEAN, DATA, INSTR, VIS_DATA, HIDDEN_NEUTRAL, VIS_INSTR]
+# One method per distinct extracted text: WHITE (= visible text), OFFPAGE (never reaches
+# the model) and OCG_OFF (extractor-dependent). TINY/RENDER3 give the same text as WHITE
+# up to line breaks (finding F-1), so they add cost but no new information to rankings.
+hiding_methods: [WHITE, OFFPAGE, OCG_OFF]
+extractors: [pdfjs, poppler]
+include_aa: false
+stopping:
+  min_repeats: 3
+  max_repeats: 3
+  target_half_width: 1

@@ -177,3 +177,19 @@ Prediction prompts are kept too. Answering them after the fact is less useful, s
 ### Predictions
 
 - [ ] **8.P1** Before `terraform plan`: how many resources will it create? (Count the `resource` blocks, including `count`/`for_each`.)
+
+---
+
+## Stage 9 — Pre-registration and first full run
+
+### Interview questions
+
+- [ ] **9.1** What exactly does pre-registration protect against, and why must `prereg.yaml` be committed _before_ the first full run rather than together with the results?
+- [ ] **9.2** The Opus upper bound is ~40× its typical cost. Why must `--confirm-budget` cover the upper bound and not the typical cost, and what can you change to lower it?
+- [ ] **9.3** The spec paraphrased a cited paper with numbers its abstract does not contain. Why does that matter for a measurement project, and how would a reviewer find out?
+- [ ] **9.4** If the budget only allows three cheap models, how does that change what the results page may claim?
+- [ ] **9.5** Why is the target precision (half-width 1.5 points) half of the minimum effect size (3 points)?
+
+### Predictions
+
+- [ ] **9.P1** Before the first full run: for which model and which hiding method do you expect the largest score lift, and will any effect pass the pre-registered rule?

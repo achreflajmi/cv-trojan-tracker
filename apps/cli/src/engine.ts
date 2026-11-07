@@ -1,3 +1,4 @@
+import { execFileSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { loadBattery, Profile } from '@ctt/corpus';
@@ -138,6 +139,22 @@ export async function plan(experimentName: string, modelKey: string): Promise<vo
   }
 }
 
+/**
+ * The commit of the last change to prereg.yaml (SPEC 3.8), recorded on the experiment.
+ * PREREG_COMMIT wins (the container has no git history); null if neither is available.
+ */
+export function preregCommit(): string | null {
+  if (process.env.PREREG_COMMIT) return process.env.PREREG_COMMIT;
+  try {
+    const sha = execFileSync('git', ['log', '-1', '--format=%H', '--', 'prereg.yaml'], {
+      encoding: 'utf8',
+    }).trim();
+    return sha || null;
+  } catch {
+    return null;
+  }
+}
+
 /** ctt run: queue workers, budget guard and sequential stopping. Re-running resumes. */
 export async function run(
   experimentName: string,
@@ -157,6 +174,7 @@ export async function run(
       confirmBudgetEur,
       adapter: createPolicyAdapter(inputs.model.provider, providers),
       concurrency: providers.providers[inputs.model.provider]?.max_concurrency ?? 4,
+      preregCommit: preregCommit(),
       log: (line) => console.log(line),
     });
     console.log(`Run ${result.runId} ${result.status} after ${result.repeats} repeat(s).`);
