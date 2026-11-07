@@ -4,3 +4,6 @@ CLAUDE.md
 
 # Prompts are frozen experiment inputs: a formatter must never change their bytes.
 battery/prompts/
+# Python project and generated data
+analysis/
+data/
