@@ -147,3 +147,15 @@ Prediction prompts are kept too. Answering them after the fact is less useful, s
 ### Predictions
 
 - [ ] **R.P1** In a 5-of-10 pool, will the target gain more or fewer places than in a 1-of-10 pool? Why (Baxi et al.)?
+
+---
+
+## Stage 7 — Results page
+
+### Interview questions
+
+- [ ] **7.1** Why a static export instead of a server reading the database? What does that buy for reproducibility, cost and security?
+- [ ] **7.2** The build once picked up fake-model results and presented them without a banner. How was it caught, and why is the guard in both the analysis and the page?
+- [ ] **7.3** How does the chart avoid relying on color alone or on hover alone?
+- [ ] **7.4** Why does the headline show the noise floor and the date next to the number?
+- [ ] **7.5** Tailwind 4.3.5 was released the same day. Why pin 4.3.3 instead of adding a release-age exception?

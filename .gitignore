@@ -26,3 +26,10 @@ Thumbs.db
 # analysis outputs (recomputed from the exported dataset)
 analysis/.pytest_cache/
 results/
+# web build outputs (regenerated from results.json)
+apps/web/.next/
+apps/web/out/
+apps/web/generated/
+apps/web/public/data/
+apps/web/next-env.d.ts
+*.tsbuildinfo

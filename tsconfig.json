@@ -1,4 +1,6 @@
 {
   "extends": "./tsconfig.base.json",
-  "include": ["packages/*/src", "apps/*/src", "*.ts"]
+  "include": ["packages/*/src", "apps/*/src", "*.ts"],
+  // apps/web has its own tsconfig (JSX, bundler resolution); `next build` type-checks it.
+  "exclude": ["apps/web"]
 }
