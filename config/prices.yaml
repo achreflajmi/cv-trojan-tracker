@@ -30,3 +30,49 @@ models:
     max_prompt_tokens: 100000
     date: 2026-11-05
     source: https://platform.claude.com/docs/en/about-claude/pricing
+
+  # OpenAI: standard tier. Prompts over 272K input tokens cost 2x input and 1.5x
+  # output, so the price is capped there (max_prompt_tokens).
+  # Model pages confirm the same prices: /api/docs/models/gpt-6.1-terra, /gpt-6-luna.
+  gpt-6.1-terra:
+    input_usd_per_mtok: 1
+    output_usd_per_mtok: 5
+    max_prompt_tokens: 272000
+    date: 2026-11-05
+    source: https://developers.openai.com/api/docs/pricing
+
+  gpt-6-luna:
+    input_usd_per_mtok: 0.1
+    output_usd_per_mtok: 0.5
+    max_prompt_tokens: 272000
+    date: 2026-11-05
+    source: https://developers.openai.com/api/docs/pricing
+
+  # Google: paid tier, standard. Output price includes thinking tokens. The page lists a
+  # dated price change: "$2.00 / $10.00 through November 30, 2026. $4.00 / $20.00
+  # starting December 1, 2026". valid_until makes the tool refuse to price calls after
+  # that day, so the new price must be entered then. No prompt-size tiers.
+  # gemini-4-argon is NOT available on Google's free tier: its key needs billing on.
+  # Prices re-verified against the official page on 2026-11-06.
+  gemini-4-argon:
+    input_usd_per_mtok: 2
+    output_usd_per_mtok: 10
+    valid_until: 2026-11-30
+    date: 2026-11-05
+    source: https://aistudio.google.com/docs/pricing
+
+  gemini-3.5-flash-lite:
+    input_usd_per_mtok: 0.3
+    output_usd_per_mtok: 2.5
+    date: 2026-11-05
+    source: https://aistudio.google.com/docs/pricing
+
+  # OpenRouter: price of the pinned endpoint "mistral/zdr" (the "mistral/eu" endpoint
+  # costs $0.77 / $2.31). Token prices are passed through; OpenRouter's fee on buying
+  # credits is not a per-token price and is not included here.
+  # Same values in https://openrouter.ai/api/v1/models/mistralai/mistral-large-4-0/endpoints
+  mistralai/mistral-large-4-0:
+    input_usd_per_mtok: 0.7
+    output_usd_per_mtok: 2.1
+    date: 2026-11-05
+    source: https://openrouter.ai/mistralai/mistral-large-4-0/providers

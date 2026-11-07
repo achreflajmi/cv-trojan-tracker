@@ -3,3 +3,8 @@ packages:
   - apps/*
 minimumReleaseAgeExclude:
   - '@anthropic-ai/sdk@1.5.0'
+# Install scripts of these SDKs are not needed (no-op/type-check/version notice); keep them off.
+allowBuilds:
+  '@google/genai': false
+  '@openrouter/sdk': false
+  protobufjs: false

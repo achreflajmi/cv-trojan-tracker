@@ -79,3 +79,20 @@ Prediction prompts are kept too. Answering them after the fact is less useful, s
 ### Predictions
 
 - [ ] **3.P1** Before the kill test: after SIGKILL and restart, how many `call` rows will have status `failed`, and why is the answer "0 or 1"?
+
+---
+
+## Stage 4 — All providers behind the adapter
+
+### Interview questions
+
+- [ ] **4.1** Why are 429 and 5xx retried but a dropped connection is not, even though a dropped connection is the most "transient" failure of all?
+- [ ] **4.2** What is "full jitter" backoff and what problem does it solve when many workers hit a rate limit at the same moment?
+- [ ] **4.3** Why does the retry give up when `retry-after` is longer than the configured ceiling, instead of waiting?
+- [ ] **4.4** On OpenRouter, why pin a single upstream endpoint and turn fallbacks off? What would the data look like if you did not?
+- [ ] **4.5** Three of the chosen models cannot turn reasoning off. How does that affect comparing models, and how is it handled in the data?
+- [ ] **4.6** Why does a price carry `valid_until`, and what goes wrong if an expired lower price is used?
+
+### Predictions
+
+- [ ] **4.P1** Before the first live call per provider: which provider's answer is most likely to be unparseable or refused, and why?

@@ -4,5 +4,7 @@ import { defineConfig } from 'vitest/config';
 export default defineConfig({
   test: {
     include: ['packages/*/src/**/*.live.test.ts'],
+    // Loads .env so the provider keys reach the tests (nothing from it is printed).
+    setupFiles: ['./vitest.setup.ts'],
   },
 });

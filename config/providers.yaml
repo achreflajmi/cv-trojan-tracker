@@ -1,0 +1,23 @@
+# Per-provider call policy (SPEC 4.2), validated by ProvidersConfig in packages/shared.
+#
+# max_concurrency: calls in flight at once to this provider, per process. Kept low on
+#   purpose: a new account's rate limits are small, and a 429 storm only slows a run
+#   down. Raise it after checking the account's limits on the provider's console.
+# retry: applies to HTTP 429 and 5xx only (packages/providers/src/retry.ts).
+#   max_attempts:  total attempts including the first (1 = never retry)
+#   base_delay_ms: first backoff ceiling; doubles each attempt, with full jitter
+#   max_delay_ms:  backoff ceiling; a retry-after longer than this ends the retries
+providers:
+  anthropic:
+    max_concurrency: 4
+    retry: { max_attempts: 5, base_delay_ms: 1000, max_delay_ms: 60000 }
+  openai:
+    max_concurrency: 4
+    retry: { max_attempts: 5, base_delay_ms: 1000, max_delay_ms: 60000 }
+  google:
+    max_concurrency: 4
+    retry: { max_attempts: 5, base_delay_ms: 1000, max_delay_ms: 60000 }
+  openrouter:
+    # One pinned upstream endpoint serves every call, so its limits are the ones that bite.
+    max_concurrency: 2
+    retry: { max_attempts: 5, base_delay_ms: 1000, max_delay_ms: 60000 }
